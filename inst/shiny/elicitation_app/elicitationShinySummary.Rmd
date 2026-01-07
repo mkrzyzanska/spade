@@ -1,0 +1,81 @@
+---
+title: "`r paste('Elicited probability distributions for ', params$QoI)`"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+date: "`r format(Sys.time(), '%d %B %Y, %H:%M')`"
+fontsize: 11pt
+params:
+  fit: NA
+  bin.left: NA
+  bin.right: NA
+  chips: NA
+  roulette: NA
+  ql: NA
+  qu: NA
+  xl: NA
+  xu: NA
+  xlab: NA
+  nBins: NA
+  fs: NA
+  xLable: NA
+  startDate: NA
+  endDate: NA
+  ybreaks: NA
+  QoI: NA
+  TS: NA
+  TE: NA
+  selected_distribution: NA
+  feedback: NA
+  fq: NA
+  fp: NA
+  PoE: NA
+---
+
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE,
+                      fig.pos = 'h',
+                      fig.align = 'center',
+                      fig.height = 5,
+                      fig.width = 10)
+showplots <- FALSE
+```
+
+
+
+
+```{r, echo = FALSE}
+fit <- params$fit
+bin.left <- params$bin.left
+bin.right <- params$bin.right
+chips <- params$chips
+roulette <- params$roulette
+ql <- params$ql 
+qu <- params$qu
+xl <- params$xl
+xu <- params$xu 
+fs <- params$fs
+xLabel <- params$xLabel
+startDate <- params$startDate
+endDate <- params$endDate
+nBins <- params$nBins
+ybreaks <- params$ybreaks
+QoI <- params$QoI
+TS <- params$TS
+TE <- params$TE
+selected_distribution <- params$selected_distribution
+filename <- "/home/sm1mkr/Documents/GitHub/QUEADE/shiny_apps/queade/distributionsChild.Rmd"
+feedback<- params$feedback
+fq<-params$fq
+fp<-params$fp
+PoE<-params$PoE
+
+```
+
+
+
+```{r child=filename}
+```
+
