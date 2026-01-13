@@ -1,6 +1,0 @@
-To do:
-
-1. Open the app [v]
-2. Get your x and y values from the splines:
-
-

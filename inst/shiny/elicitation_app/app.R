@@ -1,7 +1,7 @@
-library("SHELF")
-library("ggplot2")
-library("shinyjs")
-library("hdrcde")
+#library("SHELF")
+library("ggplot2") # check later what to do about it when packaging the function
+#library("shinyjs") - find a way to avoid using this in the code
+#library("hdrcde")
 limits<-"0, 100"
 startingMethod<-"roulette"
 nbins=20
@@ -10,61 +10,45 @@ startingPanel <- "Roulette"
 startDate<-1800
 endDate<-1950
 
-source("extra_functions/checkJudgementsValid.r")
-source("extra_functions/feedback.r")
-source("extra_functions/feedbacksingle.r")
-source("extra_functions/qhist.r")
-source("extra_functions/phist.r")
-source("extra_functions/fitdist2.r")
-source("extra_functions/normal.error.r")
-source("extra_functions/logt.error.r")
-source("extra_functions/gamma.error.r")
-source("extra_functions/tError.R")
-source("extra_functions/exponential.error.R")
-source("extra_functions/lognormal.error.R")
-source("extra_functions/plotfit.R")
-source("extra_functions/makeSingleExpertPlot.R")
-source("extra_functions/dhist.R")
-source("extra_functions/fitBspline.r")
-source("extra_functions/makeCDFPlot.R")
-source("extra_functions/cdfHelperfunctions.R")
-source("extra_functions/hdrhist.r")
-
-
-
-
-source("extra_functions/beta.error.R")
-
-
-
  ui <- shinyUI(fluidPage(
 
-     useShinyjs(),  # Initialize shinyjs
-  tags$head(
-    # Include Quill.js for rich text editing
-    tags$script(src = "https://cdn.quilljs.com/1.3.6/quill.js"),
-    tags$link(rel = "stylesheet", href = "https://cdn.quilljs.com/1.3.6/quill.snow.css")
-  ),
-
-    
     # Application title
-    titlePanel("QUEADE Artefact Dates Elicitation Software"),
-    
+    titlePanel("SPADE: Sheffield Probabilistic Artefact Dates Elicitation Software"),
+
     sidebarLayout(
       sidebarPanel(
-          textInput("QoI", label = "Quantity of Interest", value = ""),
-        # Create a div for the Quill editor
-  # Create a div for the Quill editor
-       # Create a div for the Quill editor
-      textAreaInput("PoE", 
-                          label = "Portofolio of evidence", 
-                          rows = 5,  # Adjust height
-                          cols = 40, # Adjust width
-                          placeholder = "Summarise the evidence about the QoI here..."
+
+        wellPanel(
+          tags$details(
+            open = TRUE,  # <-- opened by default
+            tags$summary(
+              style = "font-size: 1.1em; cursor: pointer;margin-bottom: 20px;",
+              tags$strong("Metadata (click here to collapse / expand)\n")
             ),
-            actionButton("submitPoE", "Save Portfolio of Evidence"),
-    
-  verbatimTextOutput("text"),
+          textInput("Expert", label = "Expert", value = ""),
+          textInput("Facilitator", label = "Facilitator", value = ""),
+          textInput("FindType", label = "Find Type", value = ""),
+          textInput("EoI", label = "Event of Interest", value = ""),
+          textInput("UFI", label = "Unique Find Identifier", value = ""),
+          textInput("ULI", label = "Unique Location Identifier", value = ""),
+          textInput("USI", label = "Unique Site Identifier", value = "")
+        )),
+        wellPanel(
+          tags$details(
+            open = TRUE,  # <-- opened by default
+            tags$summary(
+              style = "font-size: 1.1em; cursor: pointer;margin-bottom: 20px;",
+              tags$strong("Probability calculator (click here to collapse / expand)\n")
+            ),
+          helpText("Input the number of tokens to get the probability per token. Input the token's probability to calculate the number of tokens needed."),
+
+          fluidRow(
+          column(4,
+                 numericInput("nTokens", h5("Number of tokens:"), value=NULL, min = 1,step = 1),
+          ),
+          column(4,
+                 numericInput("tokenProb", h5("Token's probability:"), value=NULL, min = 0,max=1,step=0.001))
+        ))),
         wellPanel(
           h5("Fitting and feedback"),
           checkboxInput("showFittedPDF", label = "show fitted PDF"),
@@ -72,11 +56,11 @@ source("extra_functions/beta.error.R")
           checkboxInput("selectDistribution", label = "Select Custom Distribution"),
            conditionalPanel(
             condition = "input.selectDistribution == true",
-          
-          selectInput("dist", label = "Distribution", 
+
+          selectInput("dist", label = "Distribution",
                       choices =  list('Best fitting' = "best",
                                       Histogram = "hist",
-                                      Normal = "normal", 
+                                      Normal = "normal",
                                       'Student-t' = "t",
                                       'Skew normal' = "skewnormal",
                                       Gamma = "gamma",
@@ -114,7 +98,7 @@ source("extra_functions/beta.error.R")
           ),
       #  checkboxInput("showCustomFeedback", label = "Custom Feedback"),
       #  conditionalPanel(condition = "input.showCustomFeedback == true",
-      #  textInput("fq", label = h5("Feedback quantiles"), 
+      #  textInput("fq", label = h5("Feedback quantiles"),
       #            value = "0.1, 0.9"),
       #   tableOutput("valuesPDF"),
       #  uiOutput("feedbackProbabilities"),
@@ -122,7 +106,7 @@ source("extra_functions/beta.error.R")
         ),
              checkboxInput("showCustomFeedback", label = "Custom Feedback"),
         conditionalPanel(condition = "input.showCustomFeedback == true",
-        textInput("fq", label = h5("Feedback quantiles"), 
+        textInput("fq", label = h5("Feedback quantiles"),
                   value = "0.1, 0.9"),
          tableOutput("valuesPDF"),
         uiOutput("feedbackProbabilities"),
@@ -131,31 +115,34 @@ source("extra_functions/beta.error.R")
         tableOutput("fittedHDR")
           )
         )
-     
+
       ),
             mainPanel(
               tags$style(type="text/css",
                          ".shiny-output-error { visibility: hidden; }",
                          ".shiny-output-error:before { visibility: hidden; }"
               ),
-              
-              
+
+
               wellPanel(
                 fluidRow(
-                column(2, 
+                textInput("QoI", label = "Quantity of Interest", value = "")
+                ),
+                fluidRow(
+                column(2,
                        numericInput("startDate", label = h5("Earliest Plausible Date"),
-                       value = 8000,min = .Machine$double.eps),     
+                       value = 8000,min = .Machine$double.eps),
                       ),
 
                 column(2, selectInput("sdate", label = h5("\u00A0"), width = "100px",
                       choices =  list(BCE = "bce",
                           CE = "ce"
-                                      
+
                                       )),
                       ),
-               
-                column(2,    
-                       numericInput("endDate", label = h5("Latest Plausible Date  "), 
+
+                column(2,
+                       numericInput("endDate", label = h5("Latest Plausible Date  "),
                        value = 2025,min = .Machine$double.eps),
                       ),
 
@@ -164,54 +151,52 @@ source("extra_functions/beta.error.R")
                                       BCE = "bce"
                                       )),
                       ),
-                column(2,offset=1,
-                numericInput("gridHeight", 
-                         label = h5(tags$b("Grid height")), value = 10, min  = 1)
-                ),
-                ),
-
-               h5(tags$b("Input the number of tokens to get the probability per token. Input the token's probability to calculate the number of tokens needed.")),
-
+                column(2,
+                  fileInput("load_rds", "Import date", accept = ".rds")
+                )),
                 fluidRow(
+                  column(2,
+                         numericInput("gridHeight",
+                                      label = h5(tags$b("Grid height")), value = 10, min  = 1)
+                  ),
                     column(2,
-                           numericInput("nTokens", h5("Number of tokens:"), value=NULL, min = 1,step = 1),
-                           ),
-                    column(2,
-                        numericInput("tokenProb", h5("Token's probability:"), value=NULL, min = 0,max=1,step=0.001)),
-                    column(2, 
                          numericInput("fs", label = h5("Font size (plots)"), value = 16)
                       ),
                      column(2, selectInput("outFormat", label = h5("Report format"),
                                         choices = list('html' = "html_document",
                                                        'pdf' = "pdf_document",
-                                                       'Word' = "word_document"))),
-                    
-                    column(2, downloadButton("report", "Download report"),
-                          style = "margin-top: 25px;"),
+                                                       'Word' = "word_document")),
+                            downloadButton("report", "Download report")),
 
-                    column(2, downloadButton("download_rds", "Download R Object"))
+                    column(2, selectInput("exportFormat", label = h5("Export format"),
+                                          choices = list( 'R' = "r_file",
+                                                         'json' = "json_file",
+                                                         'csv' = "csv_file")),
+
+
+                           downloadButton("download_rds", "Export Results"))
               ),
               checkboxInput("customiseGraph", label = "Customise the number of bins"),
 
               conditionalPanel(condition = "input.customiseGraph == true",
                   fluidRow(
-                      column(2, 
+                      column(2,
                       numericInput("nBins", label = h5("Number of bins"),
                          value = NULL, min = 3)
                         ),
                       #,
                       # column(1, offset = 1, actionButton("exit", "Quit"))
-                  )   
+                  )
               )
             ),
               hr(),
-              
+
               tabsetPanel(
-                  tabPanel("Roulette", 
+                  tabPanel("Roulette",
                            plotOutput("roulette",
                                                 click = "location"),
-                           helpText("Click directly in the plot to allocate tokens to time intervals. 
-                                    Click just below the line at 0 on the vertical axis to clear an interval. 
+                           helpText("Click directly in the plot to allocate tokens to time intervals.
+                                    Click just below the line at 0 on the vertical axis to clear an interval.
                                     Note that in the empty intervals are not assumed to have a 0 chance of containing the quantity of interest: probabilities from adjacent non-empty intervals will be smoothed out over the empty intervals."),
                            fluidRow(
                              column(4,
@@ -226,24 +211,46 @@ source("extra_functions/beta.error.R")
                             )
                                 )
                           ),
-                tabPanel("PDF", 
+                tabPanel("PDF",
                          plotOutput("distPlot"),
                          conditionalPanel(
                            condition = "input.showFittedPDF == true",
                            wellPanel(
-                            h5(tags$b("Feedback:")),
-                            htmlOutput("quantileValuesText"),
-                           ),
+                             fluidRow(
+                               column(
+                                 width = 7,
+                                h5(tags$b("Feedback:")),
+                                htmlOutput("quantileValuesText"),
+                              ),
+                              column(
+                                width = 5,
+                                h5(tags$b("Post-elicitation notes:")),
+                                textAreaInput(
+                                  inputId = "user_notes",
+                                  label   = NULL,
+                                  width   = "100%",
+                                  height  = "200px",
+                                  placeholder = "Add notes on how the information from the portfolio of evidence informed yout judgments and distribution fit here…"
+                                  )
+                                )
+                              )),
+
                            fluidRow(
                              column(4,
                                     downloadButton('downloadDensities',
                                                    "Download plot")),
-                            conditionalPanel(
-                                condition="true",
-                             column(3,  
-                             uiOutput("setPDFxaxisLimits")
-                             )
-                           )
+                             conditionalPanel(
+                               condition="true",
+                               column(4,
+                                      uiOutput("setPDFxaxisLimits")
+                               )
+                             ),
+                             column(4,
+                             downloadButton(
+                               outputId = "download_notes",
+                               label = "Save notes (.txt)"
+                             ))
+
                            )
                          )),
                 tabPanel("CDF", plotOutput("cdf"),
@@ -253,13 +260,13 @@ source("extra_functions/beta.error.R")
                              column(4,
                                     downloadButton('downloadCDF',
                                                    "Download plot")),
-                             column(3,  
+                             column(3,
                                     uiOutput("setCDFxaxisLimits")
                              )
                            )
                          )),
-                
-                tabPanel("Help", 
+
+                tabPanel("Help",
                          includeHTML(system.file("shinyAppFiles", "help.html",
                                                  package="SHELF"))
                          ),
@@ -268,47 +275,115 @@ source("extra_functions/beta.error.R")
       )
     )
   ))
-  
+
   # Server ----
-   
+
   server <- function(input, output,session) {
 
+    is_loading <- reactiveVal(FALSE)
 
-   # Initialize the Quill editor when the app starts
-  observe({
-    runjs("
-      var quill = new Quill('#editor', {
-        theme: 'snow'
-      });
-    ")
-  })
-  
-  # When the 'save' button is pressed, capture the text from Quill editor and save it
-  observeEvent(input$save, {
-    
-    # Capture content from Quill editor (as plain text)
-    runjs("Shiny.setInputValue('editor_content', quill.root.innerHTML);")
-    
-    # Get the content from the Quill editor
-    content <- input$editor_content
-    
-    # If there is content, save it to a .txt file
-    if (!is.null(content) && content != "") {
-      
-      # Clean HTML content to get plain text
-      plain_text <- gsub("<[^>]+>", "", content)  # Strip out HTML tags
-      
-      # Write the plain text to a text file
-      writeLines(plain_text, "user_input.txt")
-      
-      # Trigger file download
-      download.file("user_input.txt", "user_input.txt")
+    observeEvent(input$load_rds, {
+      req(input$load_rds)
+
+      is_loading(TRUE)
+
+      path <- input$load_rds$datapath
+      dat  <- readRDS(path)
+
+      # --- basic validation ---
+      validate(
+        need(is.list(dat), "Invalid file"),
+        #need(!is.null(dat$metadata), "Invalid file: missing metadata")
+      )
+
+      if(dat$nBins!=nBins()){
+        print("Update checkbox")
+        updateCheckboxInput(session, "customiseGraph", value = TRUE)
+        print(input$customiseGraph)
+
+      }
+
+      # --- restore metadata inputs ---
+      updateTextInput(session, "Expert",      value = dat$metadata$expert      %||% "")
+      updateTextInput(session, "Facilitator", value = dat$metadata$facilitator %||% "")
+      updateTextInput(session, "FindType",    value = dat$metadata$findtype    %||% "")
+      updateTextInput(session, "EoI",         value = dat$metadata$EoI         %||% "")
+      updateTextInput(session, "UFI",         value = dat$metadata$UFI         %||% "")
+      updateTextInput(session, "ULI",         value = dat$metadata$ULI         %||% "")
+      updateTextInput(session, "USI",         value = dat$metadata$USI         %||% "")
+      updateTextAreaInput(session, "user_notes", value = dat$notes %||% "")
+
+      if (!is.null(dat$startDate)){
+       updateNumericInput(session, "startDate", value = abs(dat$startDate))
+       updateSelectInput(session, "sdate", selected = ifelse(dat$startDate<1,"bce","ce"))
+
+      }
+
+      if (!is.null(dat$endDate)){
+        updateNumericInput(session, "endDate", value = abs(dat$endDate))
+        updateSelectInput(session, "edate", selected = ifelse(dat$endDate<1,"bce","ce"))
+
+      }
+
+
+
+      #numericInput
+      print("Yes")
+      updateNumericInput(session, "nBins", value = as.numeric(dat$nBins))
+      updateNumericInput(session, "nBins", value = as.numeric(dat$nBins))
+
+      #nBins(dat$nBins)
+      #updateBins()
+
+
+
+      # reactiveValues / reactiveVal
+      #if (!is.null(dat$chips)) {
+      #  rl$chips <- dat$chips
+      #}
+
+      # selected_distribution
+      # If reactiveVal:
+      #selected_distribution(dat$selected_distribution %||% "best")
+
+      # If selectInput instead, use:
+      # updateSelectInput(session, "selected_distribution",
+      #                   selected = dat$selected_distribution %||% "best")
+      session$onFlushed(function() {
+        nBins(as.numeric(dat$nBins))
+        is_loading(FALSE)
+      }, once = TRUE)
+    })
+
+    build_qoi <- function(eoi, findtype,UFI,ULI,USI) {
+      eoi <- trimws(eoi %||% "")
+      findtype <- trimws(findtype %||% "")
+      UFI <- trimws(UFI %||% "")
+      ULI <- trimws(ULI %||% "")
+      USI <- trimws(USI %||% "")
+
+      # Only include bits that exist
+      parts <- c(
+        "The date (year) of",
+        if (nzchar(eoi)) eoi else "the Event of Interest",
+        "of the",
+        if (nzchar(findtype)) findtype else "artefact",
+        if (nzchar(UFI)) paste0("(", UFI, ")") else "(Unique Find Identifier)",
+
+        if (nzchar(ULI)) (if(tolower(eoi)=="deposition") paste0("in context ", ULI) else paste0("associated with context ", ULI)) else NULL,
+        if (nzchar(USI)) paste0("(", USI,")") else NULL
+        )
+
+      paste(parts, collapse = " ")
     }
-  })
-      
 
-
-
+    observe({
+      updateTextInput(
+        session,
+        "QoI",
+        value = build_qoi(input$EoI, input$FindType, input$UFI, input$ULI,input$USI)
+      )
+    })
 
      observeEvent(input$nTokens, {
         req(input$nTokens)  # Ensure input is not NULL
@@ -316,7 +391,7 @@ source("extra_functions/beta.error.R")
             updateNumericInput(session, "nTokens", value = input$nTokens*-1)  # Reset to positive number
         }
 
-        
+
         updateNumericInput(session, "tokenProb", value = round(1 / input$nTokens,3)) } # Maintain sum = 1
     , ignoreInit = TRUE)
 
@@ -329,7 +404,7 @@ source("extra_functions/beta.error.R")
         updateNumericInput(session, "tokenProb", value = valid_prob)  # Update input box
         updateNumericInput(session, "nTokens", value = closest_n)  # Sync nTokens
     }, ignoreInit = TRUE)
-    
+
     # Parameter limits ----
 
     ### Define the distribution range to figure out optimal bin number & placement
@@ -347,7 +422,7 @@ source("extra_functions/beta.error.R")
             end <- as.integer(-input$endDate)+1
         }else{
         end <- as.numeric(input$endDate)}
-        
+
       # Return distribution range
         if (!is.na(start) && !is.na(end)) {
             return(end - start)
@@ -429,7 +504,7 @@ source("extra_functions/beta.error.R")
         } else {
             return(NULL)
         }
-        
+
        # return(start)
     })
 
@@ -447,7 +522,7 @@ source("extra_functions/beta.error.R")
             return(end)
         }
 
-        # 
+        #
         range <- distributionRange()
 
         if (!is.na(end)) {
@@ -483,61 +558,61 @@ source("extra_functions/beta.error.R")
                 return(limHigh)
             }else{
                 return(end)
-            } 
+            }
         } else {
         return(NULL)
     }
-       
+
    # return(end)
     })
-    
+
     # Feedback quantiles ----
     fq <- reactive({
       tryCatch(eval(parse(text = paste("c(", input$fq, ")"))),
                error = function(e){NULL})
-      
+
     })
-    
+
     # Feedback probabilities. Needs to know parameter limits ----
     output$feedbackProbabilities <- renderUI({
-      textInput("fp", label = h5("Feedback probabilities"), 
+      textInput("fp", label = h5("Feedback probabilities"),
                 paste(c(startDate(),endDate()), collapse = ", "))
-    }) 
+    })
     output$hdrProbability <- renderUI({
       textInput("hdr", label = h5("Highest Probability Dates"), "10")
-    }) 
+    })
     fp <- reactive({
       tryCatch(eval(parse(text = paste("c(", input$fp, ")"))),
                error = function(e){NULL})
-      
-    }) 
+
+    })
 
     hdr <- reactive({
       tryCatch(eval(parse(text = paste(input$hdr))),
                error = function(e){NULL})
-      
-    }) 
-    
+
+    })
+
     # Axes limits for pdf/cdf plots. Needs to know parameter limits ----
     output$setPDFxaxisLimits <- renderUI({
-      textInput("xlimPDF", label = h5("x-axis limits"), 
+      textInput("xlimPDF", label = h5("x-axis limits"),
                 paste(c(startDate(),endDate()), collapse = ", "))
-    }) 
+    })
     xlimPDF <- reactive({
       tryCatch(eval(parse(text = paste("c(", input$xlimPDF, ")"))),
                error = function(e){NULL})
-      
+
     })
     output$setCDFxaxisLimits <- renderUI({
-      textInput("xlimCDF", label = h5("x-axis limits"), 
+      textInput("xlimCDF", label = h5("x-axis limits"),
                 paste(c(startDate(),endDate()), collapse = ", "))
-    }) 
+    })
     xlimCDF <- reactive({
       tryCatch(eval(parse(text = paste("c(", input$xlimCDF, ")"))),
                error = function(e){NULL})
-      
+
     })
-    
+
     # Elicited probabilities and values ----
     p <- reactive({
       myp <- rl$allBinsPr[rl$nonEmpty]
@@ -550,10 +625,10 @@ source("extra_functions/beta.error.R")
     cn <-  reactive({
       myc <- rl$chips[rl$chips>0]
       myc})
-    
+
     # Roulette ----
 
-    # Extract number of bins and grid height, 
+    # Extract number of bins and grid height,
     # and grid positions for roulette method
 
     # Alternatively get the maximu number of interval for optimal interval finding
@@ -572,20 +647,20 @@ source("extra_functions/beta.error.R")
 
      #   if (input$customiseGraph) {
      #     return(input$nBins)
-     #   }else{    
+     #   }else{
      #       if(is.numeric(nIntervals()) & is.numeric(distributionRange())){
      #         if(distributionRange()>10&distributionRange()<=20){
-     #             return(nIntervals()/2)    
+     #             return(nIntervals()/2)
      #         }else if(distributionRange()>20&distributionRange()<=60){
-     #             return(nIntervals()/5)  
+     #             return(nIntervals()/5)
      #         }else if(distributionRange()>60){
-     #             return(nIntervals()/10)  
-     #         }else{ 
+     #             return(nIntervals()/10)
+     #         }else{
      #             return(nIntervals())}}
      #       else{
      #         return(NULL)
-     #   } 
-     #}       
+     #   }
+     #}
     #})
 
 nBins <- reactiveVal()  # Reactive value to store nBins
@@ -593,7 +668,12 @@ nBins <- reactiveVal()  # Reactive value to store nBins
 # When checkbox is checked, use input$nBins
 observeEvent(input$customiseGraph, {
   if (input$customiseGraph) {
-    updateNumericInput(session, "nBins", value = nBins())  
+    if(is.na(input$nBins)){
+      updateNumericInput(session, "nBins", value = nBins())
+
+    }
+    #updateNumericInput(session, "nBins", value = nBins())
+    print(paste("value_third",(input$nBins)))
     nBins(input$nBins)  # Set nBins to user input when the checkbox is checked
   } else {
     # Reset to auto-calculated bins when checkbox is unchecked
@@ -604,10 +684,12 @@ observeEvent(input$customiseGraph, {
 
 # Ensure nBins updates when input$nBins changes while checkbox is checked
 observeEvent(input$nBins, {
+  if (is_loading()) return()  # Prevent updates during loading
   if (input$customiseGraph&& !is.null(input$nBins)) {
+    print(paste("value_fourth",(input$nBins)))
     nBins(input$nBins)  # Keep updating nBins immediately when input$nBins changes
   }
-})
+}, ignoreInit = TRUE)
 
 # Automatically update nBins when the checkbox is unchecked
 observe({
@@ -620,29 +702,30 @@ observe({
 
 # Helper function to update bins dynamically when in auto mode
 updateBins <- function() {
+  print("Updating bins")
   if (is.numeric(nIntervals()) & is.numeric(distributionRange())) {
     if (distributionRange() > 20 & distributionRange() <= 50) {
-      nBins(nIntervals() / 2)    
+      nBins(nIntervals() / 2)
     } else if (distributionRange() > 50 & distributionRange() <= 100) {
-      nBins(nIntervals() / 5)  
+      nBins(nIntervals() / 5)
     } else if (distributionRange() > 100 & distributionRange() <= 200) {
-      nBins(nIntervals() / 10)        
+      nBins(nIntervals() / 10)
     } else if (distributionRange() > 200 & distributionRange() <= 500) {
-      nBins(nIntervals() / 20)        
+      nBins(nIntervals() / 20)
     }  else if (distributionRange() > 500 & distributionRange() <= 1000) {
-      nBins(nIntervals() / 50)        
+      nBins(nIntervals() / 50)
     } else if (distributionRange() > 1000 & distributionRange() <= 2000) {
-      nBins(nIntervals() / 100) 
+      nBins(nIntervals() / 100)
     } else if (distributionRange() > 2000 & distributionRange() <= 5000) {
-      nBins(nIntervals() / 200)  
+      nBins(nIntervals() / 200)
     } else if (distributionRange() > 5000 & distributionRange() <= 10000) {
-      nBins(nIntervals() / 500)  
+      nBins(nIntervals() / 500)
     } else if (distributionRange() > 10000 & distributionRange() <= 50000) {
-      nBins(nIntervals() / 1000) 
+      nBins(nIntervals() / 1000)
     } else if (distributionRange() > 50000) {
-      nBins(nIntervals() / 10000)  
-    } else { 
-      nBins(nIntervals()) 
+      nBins(nIntervals() / 10000)
+    } else {
+      nBins(nIntervals())
     }
   } else {
     nBins(NULL)  # Set to NULL if values are invalid
@@ -650,20 +733,20 @@ updateBins <- function() {
 }
 
 
-      
+
     # nBins <- reactive({
     #  req(input$nBins)
     #  if(is.integer(input$nBins) & input$nBins > 0){
     #    return(input$nBins)}else{
     #      return(NULL)}
-    #    
+    #
     #})
     gridHeight <- reactive({
       req(input$gridHeight)
       if(is.integer(input$gridHeight) & input$gridHeight > 0){
         return(input$gridHeight)}else{
           return(NULL)}
-      
+
     })
     bin.width <- reactive({
       req(startDate(),endDate(), nBins())
@@ -683,7 +766,7 @@ updateBins <- function() {
           to = endDate(),
           length = nBins())
     })
-    
+
     # Initial allocation of chips to bins
     rl <- reactiveValues(x=-1, y=-1,
                           chips = rep(0, 1003),
@@ -695,7 +778,7 @@ updateBins <- function() {
 observe({
   # Ensure nBins is not NULL or invalid before updating rl$chips
   req(nBins())
-  
+
   # Update rl$chips based on the current value of nBins
   rl$chips <- rep(0, nBins())  # Update rl$chips with the new number of bins
 })
@@ -706,25 +789,25 @@ observe({
  #       if(is.numeric(nBins()) & nBins() > 0){
  #           rl$chips <- rep(0, nBins())}  # Set chips to the length of nBins() with all elements initialized to 0
  #   })
-    
+
     # Update allocation as bins are clicked on
     observeEvent(input$location, {
       rl$x <-input$location$x
       rl$y <-input$location$y
-      
+
       plotHeight <- max(gridHeight(), max(rl$chips) + 1)
-      
-      
+
+
       if(rl$x > startDate() & rl$x < endDate() & rl$y < plotHeight){
         index <- which(rl$x >= bin.left() & rl$x < bin.right())
         rl$chips[index]<-ceiling(max(rl$y, 0))
         rl$allBinsPr <- cumsum(rl$chips)/sum(rl$chips)
         rl$nonEmpty <- rl$allBinsPr > 0 & rl$allBinsPr < 1
       }
-      
-      
+
+
     })
-    
+
     # Reset chip allocation if number of bins or limits change
    # observeEvent(input$nBins,{
    #   req(input$nBins)
@@ -763,21 +846,21 @@ observe({
               tdf = input$tdf,bs_degree=input$bs_degree,exponential_tails=input$exponential_tails,rtp=input$rtp,ltp=input$ltp,edr=input$edr)
       }
     })
-    
-    # All plots have separate functions, so can be called from 
+
+    # All plots have separate functions, so can be called from
     # both renderPlot, and from ggsave() for downloading
-    
+
     plotPDF <- function(){
       req(myfit(), xlimPDF(), fq(), input$fs, quantileValues(),gridHeight())
-      
+
       if(input$showFittedPDF){
-    
+
         dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best","NS","MP")
 
-        if(input$selectDistribution){  
+        if(input$selectDistribution){
         suppressWarnings(plotfit(myfit(), d = input$dist,
                                   ql = fq()[1], qu = fq()[2],
-                                 xl = xlimPDF()[1], xu = xlimPDF()[2], 
+                                 xl = xlimPDF()[1], xu = xlimPDF()[2],
                                  fs = input$fs,
                                  xlab = input$xLabel,
                                  startDate=startDate(),
@@ -788,7 +871,7 @@ observe({
             }else{
             suppressWarnings(plotfit(myfit(), d = "best",
                                   ql = 0.1, qu = 0.9,
-                                 xl = xlimPDF()[1], xu = xlimPDF()[2], 
+                                 xl = xlimPDF()[1], xu = xlimPDF()[2],
                                  fs = input$fs,
                                  xlab = input$xLabel,
                                  startDate=startDate(),
@@ -797,22 +880,22 @@ observe({
                                  ybreaks=max(rl$chips),
                                  chips=rl$chips))}
       }
-        
-      
+
+
     }
     output$distPlot <- renderPlot({
       plotPDF()
     })
-    
+
     plotCDF <- function(){
       req(myfit(), xlimCDF(), startDate(),endDate(), fq())
-      
+
       if(input$dist == "best"){
         mydist <- as.character(myfit()$best.fitting[1, 1])
       }else{
         mydist <- input$dist
       }
-      
+
       if(is.null(xlimCDF())){
         xL <- startDate()
         xU <- endDate()
@@ -820,8 +903,8 @@ observe({
         xL <- xlimCDF()[1]
         xU <- xlimCDF()[2]
       }
-      
-      
+
+
       makeCDFPlot(lower = startDate(),
                   v = v(),
                   p = p(),endDate(),
@@ -835,25 +918,25 @@ observe({
                   xaxisLower = xL,
                   xaxisUpper = xU,
                   xlab = input$xLabel,min_val=trueStart(),max_val=trueEnd())
-      
+
     }
     output$cdf <- renderPlot({
       plotCDF()
     })
-    
+
     plotRoulette <- function(){
-      
+
       req(startDate(),endDate(), input$fs, nBins(), gridHeight(), bin.left(),
           bin.right(),rl)
       print(v())
-      print(p())  
-      print(nBins()) 
+      print(p())
+      print(nBins())
       print(paste("rl_chips:",rl$chips))
 
       xticks<-seq(startDate(),endDate(), length.out=nBins()+1)
 
      # print(paste("xticks",xticks))
-      
+
       convert_year <- function(year) {
           if (year < 1) year-1 else year
       }
@@ -867,17 +950,17 @@ observe({
      } else {
          x_lab= "YEAR"
      }
-      
-      plotHeight <-  max(gridHeight(), 
+
+      plotHeight <-  max(gridHeight(),
                          max(rl$chips) + 1)
-      
+
       par(ps = input$fs)
       plot(c(startDate(),endDate()), c(0, 0),
            xlim=c(startDate(),endDate()),
            ylim=c(-(plotHeight/5), plotHeight),
            type="l",
            ylab="",
-           xaxp=c(startDate(),endDate(), nBins()), 
+           xaxp=c(startDate(),endDate(), nBins()),
            main = paste("Total tokens placed:", sum(rl$chips), "Probability per token:", round(1/sum(rl$chips),3)),
            xlab = x_lab,
            xaxt="n") # Supress axis drawing
@@ -893,12 +976,12 @@ observe({
       }
       lines(c(bin.right()[nBins()],bin.right()[nBins()]),
             c(0, plotHeight),lty=3,col=8)
-      
+
       for(i in 1:plotHeight){
         lines(c(startDate(),endDate()),
               c(i,i), lty=3,col=8)
       }
-      
+
       for(i in 1:nBins()){
           print(i)
         if(rl$chips[i]>0){
@@ -906,7 +989,7 @@ observe({
                rep(bin.right()[i],rl$chips[i]),c(1:rl$chips[i]),col=2)
         }
       }
-      
+
     }
     output$roulette <- renderPlot({
       plotRoulette()
@@ -914,62 +997,62 @@ observe({
 
 
 
-    
+
     # Feedback - get fitted quantiles/probabilities ----
-    
+
     quantileValues <- reactive({
       req(fq(), myfit())
-      
+
       if(min(fq())<=0 | max(fq())>=1){
         return(NULL)
       }else{
-        
-        FB <- feedback(myfit(), 
+
+        FB <- feedback(myfit(),
                        quantiles = fq(),
                        ex = 1)
 
-          
+
         if(input$selectDistribution&&input$dist != "best"){
             values <- FB$fitted.quantiles[, input$dist]
-          
+
         }else{
-            values <- FB$fitted.quantiles[, 
+            values <- FB$fitted.quantiles[,
                                         as.character(myfit()$best.fitting[1,
                                                                           1])]
-          
+
         }
-        
+
         return(data.frame(quantiles=fq(), values=values))
       }
-      
+
     })
 
     customQuantileValues <- reactive({
       req(myfit())
       fqc<-c(0.1,0.9,0.5)
-      
+
       if(min(fqc)<=0 | max(fqc>=1)){
         return(NULL)
       }else{
-        
-      FB <- feedback(myfit(), 
+
+      FB <- feedback(myfit(),
                        quantiles = fqc,
                        ex = 1)
-        
+
         if(input$selectDistribution&&input$dist != "best"){
            values <- FB$fitted.quantiles[, input$dist]
         }else{
-         
-            values <- FB$fitted.quantiles[, 
+
+            values <- FB$fitted.quantiles[,
                                         as.character(myfit()$best.fitting[1,
                                                                           1])]
-          
+
         }
         print(values)
         return(values=values)
       }
-      
-    }) 
+
+    })
 
     customProbabilityValues <- reactive({
       req(myfit(),bin.left(),bin.right(),rl$chips)
@@ -978,7 +1061,7 @@ observe({
       right_bin <- bin.right()
       right_bin<-right_bin[max(which(rl$chips!=0))]
       fpc<-c(left_bin,right_bin)
-      FB <- feedback(myfit(), 
+      FB <- feedback(myfit(),
                        values = fpc,
                        ex = 1)
         print(rl$chips)
@@ -987,9 +1070,9 @@ observe({
         print(input$dist)
         if(input$selectDistribution&&input$dist != "best"){
              probs <- FB$fitted.probabilities[, input$dist]
-          
+
         }else{
-          probs <- FB$fitted.probabilities[, 
+          probs <- FB$fitted.probabilities[,
                                         as.character(myfit()$best.fitting[1,
                                                                           1])]
         }
@@ -997,33 +1080,35 @@ observe({
       df<-data.frame(probs=probs,vals=c(left_bin,right_bin))
       print(df)
       return(df)
-      
-      
-    }) 
+
+
+    })
 
     customHDR<- reactive({
       req(myfit())
 
 
-          HDR <- feedback(myfit(), 
+          HDR <- feedback(myfit(),
                        quantiles = c(0.1,0.9),
                        ex = 1,hdr.prob=10)
-     
+
         print(input$dist)
         if(input$selectDistribution&&input$dist != "best"){
-             hdr <- HDR$fitted.hdr[[input$dist]]         
+             hdr <- HDR$fitted.hdr[[input$dist]]
         }else{
           hdr <- HDR$fitted.hdr[[as.character(myfit()$best.fitting[1,1])]]
         }
-      df<-hdr$hdr
-      df2<-as.data.frame(df)
-      colnames(df2)<-c("lower","upper")
-      print("hdr")
-     
+     # if(input$dist!="normal"){
+    #  df<-hdr$hdr
+    #  df2<-as.data.frame(df)
+    #  colnames(df2)<-c("lower","upper")}
+      df<-t(as.data.frame(hdr))
+      print("Normal")
+      print(df)
       return(df)
-      
-      
-    }) 
+
+
+    })
 
 
     updatedQuantileValues <- reactive({
@@ -1034,21 +1119,21 @@ observe({
     })
 
 
-    output$quantileValuesText <- renderText({ 
+    output$quantileValuesText <- renderText({
     values <- updatedQuantileValues()$values
     probs<-updatedQuantileValues()$probs
     pvals<-updatedQuantileValues()$pvalues
-    hdrval <- customHDR()    
+    hdrval <- customHDR()
 
-    
+
     # Check if values are NULL and handle that case
     if (is.null(values)) {
         return("Quantiles are out of bounds or not available.")
     }
-    
+
     # Create a formatted text output
 
-        
+
 
     values <- sapply(values,function(x){
         if(x<1){
@@ -1070,13 +1155,13 @@ observe({
        else{text <- paste(round(x,0),"CE")}
         return(text)
         })
-        
+
     s1<- paste("There is about 10% probability that the artefact was deposited before", values[1], sep=" ")
     s2<-paste("There is about 10% probability that the artefact was deposited after", values[2],sep=" ")
     s3<-paste("It is equally likely that the artefact was deposited before and after", values[3],sep=" ")
     s4<-paste("There is about ",round(probs[1] * 100,2), "% probabiliy that the artefact was deposited before ", pvals[1] ,sep="")
     s5<-paste("There is about ",round((1-probs[2]) * 100,2), "% probabiliy that the artefact was deposited after ", pvals[2],sep="")
-    s6<-paste("The most likely date range for the artefact deposion is between ", hdrval[1,1]," and ", hdrval[1,2], " (10% probability)", sep="" )    
+    s6<-paste("The most likely date range for the artefact deposion is between ", hdrval[1,1]," and ", hdrval[1,2], " (10% probability)", sep="" )
     HTML(paste0("<ul>",
               "<li>", s1, "</li>",
               "<li>", s2, "</li>",
@@ -1088,46 +1173,49 @@ observe({
 })
     probabilityValues <- reactive({
       req(fp(), myfit())
-      
-      FB <- feedback(myfit(), 
+
+      FB <- feedback(myfit(),
                      values = fp(),
                      ex = 1)
-      
+
       if(input$selectDistribution&&input$dist != "best"){
       probs <- FB$fitted.probabilities[, input$dist]
       }else{
-          probs <- FB$fitted.probabilities[, 
+          probs <- FB$fitted.probabilities[,
                                          as.character(myfit()$best.fitting[1,
                                                                            1])]
-        
+
       }
-      
+
       return(data.frame(values=fp(), probabilities = probs))
-      
-      
-    }) 
+
+
+    })
 
     hdrValues <- reactive({
       req(hdr(), myfit())
       #print("hdr")
       #print(hdr())
-      
+
       HDR <- feedback(myfit(), quantiles = c(0.1,0.9),ex = 1,hdr.prob=hdr())
-     
+
        # print(input$dist)
         if(input$selectDistribution&&input$dist != "best"){
-             hdreg <- HDR$fitted.hdr[[input$dist]]         
+             hdreg <- HDR$fitted.hdr[[input$dist]]
         }else{
           hdreg <- HDR$fitted.hdr[[as.character(myfit()$best.fitting[1,1])]]
         }
-      df<-hdreg$hdr
-      df<-as.data.frame(df)
-      colnames(df)<-c("earlier","later")
-        
+      #if(input$dist!="normal"){df<-hdreg$hdr
+      #df<-as.data.frame(df)
+      #colnames(df)<-c("earlier","later")}
+      df<-t(as.data.frame(hdreg))
+      #print("Normal")
+      print(df)
+
       return(df)
-      
-    }) 
-    
+
+    })
+
     # ...and display on the PDF tab...
     output$valuesPDF <- renderTable({
       req(quantileValues())
@@ -1142,7 +1230,7 @@ observe({
       req(hdrValues())
       hdrValues()
     })
-    
+
     # ...and display on the CDF tab
     output$fittedProbsCDF <- renderTable({
       req(probabilityValues())
@@ -1152,38 +1240,34 @@ observe({
       req(quantileValues())
       quantileValues()
     })
-    
+
     # Compare individual elicited judgements with RIO ----
-    
+
     groupFit <- reactive({
       file <- input$loadCSV
       ext <- tools::file_ext(file$datapath)
-      
+
       req(file)
       validate(need(ext == "csv", "Please upload a csv file"))
       readSHELFcsv(file$datapath)
     })
-    
+
     output$compareRIO <- renderPlot({
       req(groupFit(), myfit())
       compareGroupRIO(groupFit(), myfit(), type = input$comparePlotType,
                       fs = input$fs,
                       xlab = input$xLabel)
     })
-    
+
     # Download individual plots ----
     output$downloadDensities = downloadHandler(
       filename = 'fittedPDF.png',
       content = function(file) {
-        device <- function(..., width, height) {
-          grDevices::png(..., width = 5, height = 3,
-                         res = 300, units = "in")
-        }
-        ggsave(file, plot = plotPDF(),
-               device = device, width = 5,
-               height = 3, units = "in")
+        grDevices::png(file)
+        plotPDF()
+        grDevices::dev.off()
       })
-    
+
     output$downloadCDF = downloadHandler(
       filename = 'fittedCDF.png',
       content = function(file) {
@@ -1195,7 +1279,7 @@ observe({
                device = device, width = 5,
                height = 3, units = "in")
       })
-    
+
     output$downloadTertiles = downloadHandler(
       filename = 'tertiles.png',
       content = function(file) {
@@ -1207,7 +1291,7 @@ observe({
                device = device, width = 5,
                height = 3, units = "in")
       })
-    
+
     output$downloadQuartiles = downloadHandler(
       filename = 'quartiles.png',
       content = function(file) {
@@ -1219,24 +1303,17 @@ observe({
                device = device, width = 5,
                height = 3, units = "in")
       })
-    
+
     output$downloadRoulette = downloadHandler(
       filename = 'roulette.png',
       content = function(file) {
-       # device <- function(..., width, height) {
-        #  grDevices::png(..., width = 5, height = 3,
-        #                 res = 300, units = "in")
-        #}
-        #ggsave(file, plot = plotRoulette(),
-         #      device = device, width = 5,
-          #     height = 3, units = "in")
         grDevices::png(file)
         plotRoulette()
         grDevices::dev.off()
       })
-    
+
     # Download roulette allocation as csv
-    
+
     output$downloadRouletteCSV <- downloadHandler(
       filename = function() {
         paste('roulette-', Sys.Date(), '.csv', sep='')
@@ -1245,7 +1322,7 @@ observe({
         rouletteCSV <- data.frame(bins = paste0("(",bin.left(),
                                                ", ",bin.right(),"]"),
                                  probs = rl$chips)
-                                 
+
         utils::write.csv(rouletteCSV, file)
       }
     )
@@ -1255,26 +1332,41 @@ observe({
       paste0("my_object_", Sys.Date(), ".rds")
     },
     content = function(file) {
-      saveRDS(myfit(), file)
+
+      elicited_date <- list(metadata=list(expert = input$Expert,
+                                  facilitator = input$Facilitator,
+                                  findtype= input$FindType,
+                                  EoI= input$EoI,
+                                  UFI = input$UFI,
+                                  ULI = input$ULI,
+                                  USI = input$USI),
+
+                        startDate=startDate(),
+                        endDate=endDate(),
+                        nBins=ifelse(input$customiseGraph && !is.null(input$nBins),input$nBins,nBins()),
+                          chips = rl$chips,
+                          selected_distribution=input$dist,
+                          notes = input$user_notes
+      )
+      saveRDS(elicited_date, file)
     }
   )
-      
- observeEvent(input$submitPoE, {
-        req(input$PoE)  # Ensure the input is not empty
-        writeLines(input$PoE, "Portfolio_of_Evidence.txt")
-        showNotification("Portfolio of Evidence saved!", type = "message")
-    })
-    
-    # Download handler for exporting the PoE as a text file
-    output$downloadPoE <- downloadHandler(
-        filename = function() { "Portfolio_of_Evidence.txt" },
-        content = function(file) {
-            writeLines(input$PoE, file)
-        }
+
+    output$download_notes <- downloadHandler(
+      filename = function() {
+        paste0("notes_", Sys.Date(), ".txt")
+      },
+      content = function(file) {
+        writeLines(
+          text = input$user_notes %||% "",
+          con  = file,
+          useBytes = TRUE
+        )
+      }
     )
 
-   
-    
+
+
     # Download R Markdown report
     output$report <- downloadHandler(
       filename = function(){switch(input$outFormat,
@@ -1287,32 +1379,31 @@ observe({
         # can happen when deployed).
         tempReport <- file.path(tempdir(), "elicitationShinySummary.Rmd")
         file.copy("elicitationShinySummary.Rmd", tempReport, overwrite = TRUE)
-        
+
         # Set up parameters to pass to Rmd document
         #if(input$method==1){
         #  params <- list(fit = myfit(), roulette = FALSE)
         #}
-        
-        
+
+
         # Include roulette allocation
         QoI<- input$QoI
         print(QoI)
 
        # Check selected distribution
- 
+
         if(input$selectDistribution){
             selected_distribution<-input$dist}
         else{
             selected_distribution<-"best"}
 
       print(selected_distribution)
-      
-       # if(input$method==2){
+
           params <- list(fit = myfit(),
-                         ql = fq()[1], 
+                         ql = fq()[1],
                          qu = fq()[2],
                          xl = xlimPDF()[1],
-                         xu = xlimPDF()[2], 
+                         xu = xlimPDF()[2],
                          fs = input$fs,
                          xlab = input$xLabel,
                          startDate=startDate(),
@@ -1329,15 +1420,15 @@ observe({
                          selected_distribution=selected_distribution,
                          fq=fq(),
                          fp=fp(),
-                         PoE=input$PoE)
-        #}
+                         user_notes = input$user_notes,
+                         expert = input$Expert,
+                         facilitator = input$Facilitator,
+                         findtype= input$FindType,
+                         EoI= input$EoI,
+                         UFI = input$UFI,
+                         ULI = input$ULI,
+                         USI = input$USI)
 
-
-                    
-                               
-                              
-                                
-                                
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document
         # from the code in this app).
@@ -1348,12 +1439,12 @@ observe({
         )
       }
     )
-    
+
     # Quit app button
     observeEvent(input$exit, {
       stopApp(myfit())
-    }) 
-    
+    })
+
   }
   #), launch.browser = TRUE)
   shinyApp(ui, server, options = list(launch.browser = TRUE))

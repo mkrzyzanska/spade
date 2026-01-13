@@ -1,21 +1,13 @@
-### Portfolio of Evidence:
+# Token allocation summary
 
-`r PoE`
-
-
-### Plausible Date Range  
-
-##### **Earliest plausible date:** `r ifelse(TS<=0, paste(abs(TS-1), " BCE"), paste(TS," CE"))` 
-##### **Latest plausible date:** `r ifelse(TE<=0, paste(abs(TE-1), " BCE"), paste(TE," CE"))`
-
-### Token allocation summary
-
-##### **Total number of tokens**: `r sum(chips)`
-##### **Probability per token**:  `r 1/sum(chips)`
+**Earliest plausible date:** `r ifelse(TS<=0, paste(abs(TS-1), " BCE"), paste(TS," CE"))`  
+**Latest plausible date:** `r ifelse(TE<=0, paste(abs(TE-1), " BCE"), paste(TE," CE"))`  
+  
+**Number of time intervals**: `r length(chips)`  
+**Total number of tokens**: `r sum(chips)`  
+**Approximate probability mass per token**:  `r paste(round(1/sum(chips),2)*100, "%")`
 
 ```{r}
-if(roulette == TRUE){
-
 # Initialize an empty vector to store the formatted intervals
 bins <- vector("character", length = length(bin.left))
 
@@ -43,99 +35,12 @@ colnames(sdf) <- c( "Time intervals", "Allocated tokens")
 
 # Display the result using knitr::kable
 knitr::kable(sdf)
-}
 ```
 
-```{r}
-source("extra_functions/checkJudgementsValid.r")
-source("extra_functions/feedback.r")
-source("extra_functions/feedbacksingle.r")
-source("extra_functions/qhist.r")
-source("extra_functions/phist.r")
-source("extra_functions/fitdist2.r")
-source("extra_functions/normal.error.r")
-source("extra_functions/logt.error.r")
-source("extra_functions/gamma.error.r")
-source("extra_functions/tError.R")
-source("extra_functions/exponential.error.R")
-source("extra_functions/lognormal.error.R")
-source("extra_functions/plotfit.R")
-source("extra_functions/makeSingleExpertPlot.R")
-source("extra_functions/dhist.R")
-source("extra_functions/fitBspline.r")
-source("extra_functions/makeCDFPlot.R")
-source("extra_functions/cdfHelperfunctions.R")
-source("extra_functions/generateFeedbackSummary.R")
-source("extra_functions/feedbackText.R")
+# Selected Fit `r paste(selected_distribution,"distribution",sep=" ")`
 
-```
+```{r fig.width=6.5, fig.height=4}
 
-### Elicited cumulative probabilities
-
-```{asis, echo = roulette}
-Implied cumulative probabilities used for distribution fitting are as follows
-```
-
-```{r}
-expert <- 1
-sf <- 3
-mydf <- data.frame( fit$vals[expert, ], fit$probs[expert, ])
-
-colnames(mydf) <- c( "$x$", "$P(X\\le x)$")
-knitr::kable(mydf)
-```
-
-```{r}
-if(fit$limits[expert, 1] == 0){
-  x <- paste0("x")
-  lower <- "`"}else{
-    lower <- paste0("`", fit$limits[expert, 1], " + ")}
-
-if(fit$limits[expert, 1] > 0){
-  x <- paste0("(x-", fit$limits[expert, 1],")")}
-if(fit$limits[expert, 1] < 0){
-  x <- paste0("(x+", abs(fit$limits[expert, 1]),")")}
-
-xMirror <- paste0("(", fit$limits[expert, 2],"-x)")
-upper <- paste0("`", fit$limits[expert, 2], " - ")
-```
-
-```{r}
-lx <- min(fit$vals[expert, ])
-ux <- max(fit$vals[expert, ])
-```
-
-```{r}
-judgementsDF <- data.frame(judgement = c("lower limit",
-                                         "upper limit",
-                                         "smallest elicited probability",
-                                         "largest elicited probability"
-                                         )
-                           ,
-                           value = c(fit$limits[expert, "lower"],
-                                         fit$limits[expert, "upper"],
-                                         min(fit$probs[expert, ]),
-                                          max(fit$probs[expert, ])
-                                         )
-                           )
-                                         
-                                             
-                                         
-                                        
-```
-
-```{r, eval = any(is.na(fit$ssq[expert, ]))}
-knitr::kable(judgementsDF)
-```
-
-All parameter values reported to 3 significant figures.
-
-### Selected Fit
-
-
-```{r}
-#fit$ssq[expert, selected_distribution]
-#if(!is.na(fit$ssq[expert, "normal"])){
 plotfit(fit, d = selected_distribution,
         ql=ql,qu=qu,
         xl=xl, xu=xu, 
@@ -146,12 +51,12 @@ plotfit(fit, d = selected_distribution,
         nBins=nBins,
         ybreaks=ybreaks,
         chips=chips)
-#plotfit(fit, d = "normal")
-#}
+
 ```
 
-### Feedback for the fit
-```{r}
+# Feedback for the fit
+
+```{r results='asis'}
 fqc<-c(0.1,0.9,0.5)  
 bin.left<-bin.left[min(which(chips!=0))]
 bin.right<-bin.right[max(which(chips!=0))]
@@ -161,15 +66,49 @@ fbs<-generateFeedbackSummary(fit,dist=selected_distribution,fqc=fqc,fpc=fpc)
 feedbackText(fbs)
 ```
 
-### Additional feedback
+# Post-elicitation notes
 
-```{r}
+```{r echo=FALSE, results='asis'}
+
+cat(user_notes)
+
+```
+
+# Additional Information
+
+## Custom feedback
+
+```{r results='asis'}
 
 fbs<-generateFeedbackSummary(fit,dist=selected_distribution,fqc=fq,fpc=fp)
 
-knitr::kable(fbs$values)
-knitr::kable(fbs$probs)
-
+cat("**Additional feedback for selected quantiles**\n\n")
+knitr::kable(round(fbs$values),2)
+cat("**Additional feedback for selected probabilities**\n\n")
+knitr::kable(round(fbs$probs,2))
 
 ```
+## Elicited cumulative probabilities
+
+```{asis, echo = roulette}
+Implied cumulative probabilities used for distribution fitting are as follows:
+```
+
+```{r}
+expert <- 1
+sf <- 3
+mydf <- data.frame( fit$vals[expert, ], fit$probs[expert, ])
+
+colnames(mydf) <- c( "$x$", "$P(X\\le x)$")
+knitr::kable(round(mydf,2))
+```
+
+  
+
+All parameter values reported to 3 significant figures.   
+
+Probabiliites provided either to 2 decimal places or as percentage.  
+
+
+
 

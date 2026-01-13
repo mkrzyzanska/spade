@@ -1,9 +1,0 @@
-- Pompei: curve endpoint "to early"
-
-- Saalburg: curve starting point "to early"
-
-- Rottweil: curve starting point "perfect"
-
-- Velsen: curve endpoint "perfect"
-
-- Inchtuthil: unfortunately only 9 pieces, but "to early"
