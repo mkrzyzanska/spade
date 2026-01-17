@@ -15,5 +15,6 @@ Suggests:
 Config/testthat/edition: 3
 Imports: 
     shiny,
-    shinyjs
+    shinyjs,
+    splines2
 VignetteBuilder: knitr
