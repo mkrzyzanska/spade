@@ -343,6 +343,11 @@ endDate<-1950
         updateCheckboxInput(session, "showFittedPDF", value = TRUE)
         updateSelectInput(session, "dist",
                                              selected = dat$selected_distribution)
+      }else{
+        updateCheckboxInput(session, "selectDistribution", value = FALSE)
+        updateCheckboxInput(session, "showFittedPDF", value = FALSE)
+        updateSelectInput(session, "dist",
+                          selected = "best")
       }
 
         # selected_distribution
@@ -1102,7 +1107,7 @@ observe({
 
         }
 
-        return(data.frame(quantiles=fq(), values=values))
+        return(data.frame(quantiles=fq(), values=to.BCECE(values,toText=TRUE)))
       }
 
     })
@@ -1267,7 +1272,7 @@ observe({
 
       }
 
-      return(data.frame(values=fp(), probabilities = probs))
+      return(data.frame(values=to.BCECE(fp(),toText=TRUE), probabilities = probs))
 
 
     })
@@ -1290,6 +1295,7 @@ observe({
       #colnames(df)<-c("earlier","later")}
       df<-t(as.data.frame(hdreg))
       #print("Normal")
+      df<-t(as.data.frame(apply(df,2,to.BCECE,toText=TRUE)))
       print(df)
 
       return(df)
