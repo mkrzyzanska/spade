@@ -230,7 +230,7 @@ endDate<-1950
                                   label   = NULL,
                                   width   = "100%",
                                   height  = "200px",
-                                  placeholder = "Add notes on how the information from the portfolio of evidence informed yout judgments and distribution fit here…"
+                                  placeholder = "Add notes on how the information from the portfolio of evidence informed your judgments and distribution fit here…"
                                   )
                                 )
                               )),
@@ -281,6 +281,8 @@ endDate<-1950
   server <- function(input, output,session) {
 
     is_loading <- reactiveVal(FALSE)
+    pending_dat <- reactiveVal(NULL)
+    pending_chips_applied <- reactiveVal(FALSE)
 
     observeEvent(input$load_rds, {
       req(input$load_rds)
@@ -290,18 +292,27 @@ endDate<-1950
       path <- input$load_rds$datapath
       dat  <- readRDS(path)
 
+
       # --- basic validation ---
       validate(
         need(is.list(dat), "Invalid file"),
         #need(!is.null(dat$metadata), "Invalid file: missing metadata")
       )
 
-      if(dat$nBins!=nBins()){
-        print("Update checkbox")
-        updateCheckboxInput(session, "customiseGraph", value = TRUE)
-        print(input$customiseGraph)
 
-      }
+      pending_dat(dat)
+      pending_chips_applied(FALSE)
+
+      #if(dat$customisedBins==TRUE){
+       # print("Update checkbox")
+        updateCheckboxInput(session, "customiseGraph", value = TRUE)
+        print("Yes")
+        print(input$customiseGraph)
+      #  updateNumericInput(session, "nBins", value = as.numeric(dat$nBins))
+      #}else{
+      #  updateCheckboxInput(session, "customiseGraph", value = FALSE)
+      #  print(input$customiseGraph)
+      #}
 
       # --- restore metadata inputs ---
       updateTextInput(session, "Expert",      value = dat$metadata$expert      %||% "")
@@ -313,46 +324,106 @@ endDate<-1950
       updateTextInput(session, "USI",         value = dat$metadata$USI         %||% "")
       updateTextAreaInput(session, "user_notes", value = dat$notes %||% "")
 
-      if (!is.null(dat$startDate)){
-       updateNumericInput(session, "startDate", value = abs(dat$startDate))
-       updateSelectInput(session, "sdate", selected = ifelse(dat$startDate<1,"bce","ce"))
+        if (!is.null(dat$startDate)){
+          updateNumericInput(session, "startDate", value = abs(dat$startDate))
+          updateSelectInput(session, "sdate", selected = ifelse(dat$startDate<1,"bce","ce"))
 
-      }
+        }
 
-      if (!is.null(dat$endDate)){
-        updateNumericInput(session, "endDate", value = abs(dat$endDate))
-        updateSelectInput(session, "edate", selected = ifelse(dat$endDate<1,"bce","ce"))
+        if (!is.null(dat$endDate)){
+          updateNumericInput(session, "endDate", value = abs(dat$endDate))
+          updateSelectInput(session, "edate", selected = ifelse(dat$endDate<1,"bce","ce"))
 
-      }
+        }
 
-
-
-      #numericInput
-      print("Yes")
-      updateNumericInput(session, "nBins", value = as.numeric(dat$nBins))
       updateNumericInput(session, "nBins", value = as.numeric(dat$nBins))
 
-      #nBins(dat$nBins)
-      #updateBins()
+      if(dat$selected_distribution!="best"){
+        updateCheckboxInput(session, "selectDistribution", value = TRUE)
+        updateCheckboxInput(session, "showFittedPDF", value = TRUE)
+        updateSelectInput(session, "dist",
+                                             selected = dat$selected_distribution)
+      }
+
+        # selected_distribution
+        # If reactiveVal:
+        #selected_distribution(dat$selected_distribution %||% "best")
+
+        # If selectInput instead, use:
+        # updateSelectInput(session, "selected_distribution",
+        #                   selected = dat$selected_distribution %||% "best")
+        # session$onFlushed(function() {
 
 
 
-      # reactiveValues / reactiveVal
-      #if (!is.null(dat$chips)) {
-      #  rl$chips <- dat$chips
-      #}
+        #numericInput
 
-      # selected_distribution
-      # If reactiveVal:
-      #selected_distribution(dat$selected_distribution %||% "best")
 
-      # If selectInput instead, use:
-      # updateSelectInput(session, "selected_distribution",
-      #                   selected = dat$selected_distribution %||% "best")
-      session$onFlushed(function() {
-        nBins(as.numeric(dat$nBins))
+        session$onFlushed(function() {
+        #a<-nBins()
+        #print(paste("nbins:",a))
+        print(dat$nBins)
+
+        # ensure nBins reactiveVal matches loaded value
+        #nBins(dat$nBins)
+
+        # reset chips to correct length (this is what your observer used to do)
+        #rl$chips <- rep(0, isolate(nBins()))
+
+        # 3) now restore chips
+       # if (!is.null(dat$chips)) {
+          print("Flusehd")
+          x <- dat$chips
+          nb <- isolate(nBins())
+
+          # ensure correct length
+          length(x) <- nb
+          x[is.na(x)] <- 0
+
+          rl$chips <- x
+      #  }
         is_loading(FALSE)
-      }, once = TRUE)
+      }, once = TRUE
+      )
+    })
+
+    observe({
+      dat <- pending_dat()
+      if (is.null(dat)) return()
+      if (isTRUE(pending_chips_applied())) return()
+
+      # Require the key things your chips depend on
+      req(startDate(), endDate(), nBins())
+
+      # Compute the internal target values from the saved file
+      target_start <- ifelse(dat$startDate < 0, dat$startDate+1, dat$startDate)
+      target_end   <- ifelse(dat$endDate < 0, dat$endDate+1, dat$endDate)
+      target_bins  <- as.numeric(dat$nBins)
+
+      print(paste("target_start",target_start,startDate()))
+
+      # If any are NA, don't proceed
+      req(is.finite(target_start), is.finite(target_end), is.finite(target_bins))
+
+      # Check match (use tolerance for safety)
+      same_start <- isTRUE(all.equal(startDate(), target_start, tolerance = 0))
+      same_end   <- isTRUE(all.equal(endDate(),   target_end,   tolerance = 0))
+      same_bins  <- isTRUE(all.equal(nBins(),     target_bins,  tolerance = 0))
+
+      if (!(same_start && same_end && same_bins)) return()
+      # NOW it's safe to apply chips
+      if (!is.null(dat$chips)) {
+        x <- dat$chips
+        nb <- nBins()
+        length(x) <- nb
+        x[is.na(x)] <- 0
+        rl$chips <- x
+        rl$allBinsPr <- cumsum(rl$chips)/sum(rl$chips)
+        rl$nonEmpty <- rl$allBinsPr > 0 & rl$allBinsPr < 1
+      }
+
+      pending_chips_applied(TRUE)
+      pending_dat(NULL)  # clear pending load
     })
 
     build_qoi <- function(eoi, findtype,UFI,ULI,USI) {
@@ -618,6 +689,7 @@ endDate<-1950
       myp <- rl$allBinsPr[rl$nonEmpty]
       myp
     })
+
     v <- reactive({
        myv <- bin.right()[rl$nonEmpty]
     })
@@ -667,6 +739,7 @@ nBins <- reactiveVal()  # Reactive value to store nBins
 
 # When checkbox is checked, use input$nBins
 observeEvent(input$customiseGraph, {
+  if (is_loading()) return()
   if (input$customiseGraph) {
     if(is.na(input$nBins)){
       updateNumericInput(session, "nBins", value = nBins())
@@ -678,13 +751,14 @@ observeEvent(input$customiseGraph, {
   } else {
     # Reset to auto-calculated bins when checkbox is unchecked
     req(nIntervals(), distributionRange())
+    print("Observe Event Reset")
     updateBins()
   }
 })
 
 # Ensure nBins updates when input$nBins changes while checkbox is checked
 observeEvent(input$nBins, {
-  if (is_loading()) return()  # Prevent updates during loading
+  #if (is_loading()) return()  # Prevent updates during loading
   if (input$customiseGraph&& !is.null(input$nBins)) {
     print(paste("value_fourth",(input$nBins)))
     nBins(input$nBins)  # Keep updating nBins immediately when input$nBins changes
@@ -695,6 +769,7 @@ observeEvent(input$nBins, {
 observe({
   if (!input$customiseGraph) {  # Only run when unchecked
     req(nIntervals(), distributionRange(),startDate(),endDate())  # Ensure required values exist
+    print("Observe reset")
     updateBins()  # Call function to update bins dynamically
     rl$chips <- rep(0, nBins())
   }
@@ -702,6 +777,8 @@ observe({
 
 # Helper function to update bins dynamically when in auto mode
 updateBins <- function() {
+  if (is_loading()) return()
+  if (input$customiseGraph) return() # Skip if in custom mode
   print("Updating bins")
   if (is.numeric(nIntervals()) & is.numeric(distributionRange())) {
     if (distributionRange() > 20 & distributionRange() <= 50) {
@@ -749,6 +826,7 @@ updateBins <- function() {
 
     })
     bin.width <- reactive({
+      print("Bin width update")
       req(startDate(),endDate(), nBins())
       print(startDate())
       print(endDate())
@@ -776,6 +854,7 @@ updateBins <- function() {
 
       # Watch for changes in nBins() and update rl$chips accordingly
 observe({
+  print("Trigger")
   # Ensure nBins is not NULL or invalid before updating rl$chips
   req(nBins())
 
@@ -883,6 +962,7 @@ observe({
 
 
     }
+
     output$distPlot <- renderPlot({
       plotPDF()
     })
@@ -1344,6 +1424,7 @@ observe({
                         startDate=startDate(),
                         endDate=endDate(),
                         nBins=ifelse(input$customiseGraph && !is.null(input$nBins),input$nBins,nBins()),
+                        customisedBins=input$customiseGraph,
                           chips = rl$chips,
                           selected_distribution=input$dist,
                           notes = input$user_notes
@@ -1370,8 +1451,8 @@ observe({
     # Download R Markdown report
     output$report <- downloadHandler(
       filename = function(){switch(input$outFormat,
-                                   html_document = "distributions-report.html",
                                    pdf_document = "distributions-report.pdf",
+                                   html_document = "distributions-report.html",
                                    word_document = "distributions-report.docx")},
       content = function(file) {
         # Copy the report file to a temporary directory before processing it, in
