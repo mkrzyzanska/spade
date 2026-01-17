@@ -1,0 +1,10 @@
+name: spade
+title:
+username: queade
+account: queade
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 16449011
+bundleId:
+url: https://queade.shinyapps.io/spade/
+version: 1
