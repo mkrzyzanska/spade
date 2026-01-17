@@ -1,0 +1,6 @@
+pandoc: 3.1.11
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles:
+  using-the-app: using-the-app.html
+last_built: 2026-01-17T17:21Z

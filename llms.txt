@@ -1,0 +1,36 @@
+# spade
+
+The goal of spade is to …
+
+## Installation
+
+You can install the development version of spade like so:
+
+``` r
+# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+``` r
+library(spade)
+## basic example code
+```
+
+# Package index
+
+## All functions
+
+- [`makeCDFPlot()`](makeCDFPlot.md) : Plot the elicited cumulative
+  probabilities
+- [`plotfit()`](plotfit.md) : Plot the fitted density function for one
+  or more experts
+- [`run_app()`](run_app.md) : Run the Shiny app
+
+# Articles
+
+### All vignettes
+
+- [using-the-app](using-the-app.md):
