@@ -149,6 +149,7 @@ Jeremy Oakley <j.oakley@sheffield.ac.uk>
 ## Examples
 
 ``` r
+
 if (FALSE) { # \dontrun{
 # Two experts
 # Expert 1 states P(X<30)=0.25, P(X<40)=0.5, P(X<50)=0.75

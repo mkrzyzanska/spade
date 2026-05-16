@@ -110,6 +110,7 @@ makeCDFPlot(
 ## Examples
 
 ``` r
+
 if (FALSE) { # \dontrun{
 vQuartiles <- c(30, 35, 45)
 pQuartiles<- c(0.25, 0.5, 0.75)
