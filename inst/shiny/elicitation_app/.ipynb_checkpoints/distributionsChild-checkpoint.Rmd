@@ -1,0 +1,178 @@
+# Token allocation summary
+
+**Earliest plausible date:** `r ifelse(TS<=0, paste(abs(TS-1), " BCE"), paste(TS," CE"))`  
+**Latest plausible date:** `r ifelse(TE<=0, paste(abs(TE-1), " BCE"), paste(TE," CE"))`  
+  
+**Number of time intervals**: `r length(chips)`  
+**Total number of tokens**: `r sum(chips)`  
+**Approximate probability mass per token**:  `r paste(round(1/sum(chips),2)*100, "%")`
+
+```{r}
+# Initialize an empty vector to store the formatted intervals
+bins <- vector("character", length = length(bin.left))
+
+# Loop over each pair of bin.left and bin.right
+for (i in 1:length(bin.left)) {
+  
+  # Subtract 1 from negative or zero values
+  left_val <- ifelse(bin.left[i] <= 0, bin.left[i] - 1, bin.left[i])
+  right_val <- ifelse(bin.right[i] <= 0, bin.right[i] - 1, bin.right[i])
+  
+  # Determine the suffix based on the sign of left_val and right_val
+  if (left_val < 0 && right_val < 0) {
+     bins[i] <- paste0(abs(left_val), " - ", abs(right_val), " BCE")
+  } else if (left_val > 0 && right_val > 0) {
+    bins[i] <- paste0(abs(left_val), " - ", abs(right_val), " BCE")
+  } else {
+    # Mixed case: one negative, one positive
+    bins[i] <- paste0(abs(left_val), " BCE"," - ", abs(right_val), " CE")
+  }
+}
+
+# Combine the bins with the tokens (chips) into a data frame
+sdf <- data.frame(Intervals = bins, Tokens = chips)
+colnames(sdf) <- c( "Time intervals", "Allocated tokens")
+
+# Display the result using knitr::kable
+knitr::kable(sdf)
+```
+
+# Selected Fit: 
+
+```{r, echo = FALSE}
+
+### Normal
+
+if(selected_distribution=="normal"){
+  mu <- signif(fit$Normal[1, 1],5)
+  sig <- signif(fit$Normal[1, 2],5)
+  
+  equation <- paste0("$$f_X(x)=\\frac{1}{\\sqrt{2\\pi\\sigma^2}} 
+\\exp\\left(-\\frac{1}{2 \\sigma^2}(x - \\mu)^2\\right),\\quad -\\infty<x<\\infty,$")
+  parameters<-paste0("$\\mu = ", mu,",$ $\\sigma = ", sig, "$")
+  label = "Normal"
+
+### Student-T
+
+}else if(selected_distribution=="t"){
+
+   m <- signif(fit$Student.t[1, 1],5)
+   s <- signif(fit$Student.t[1, 2],5)
+   tdf <- fit$Student.t[1, 3]
+
+    equation <- paste0("$$
+f_X(x) = \\frac{\\Gamma((\\nu + 1)/2)}{\\Gamma(\\nu/2)\\sigma\\sqrt{\\nu \\pi}} \\left(1 + \\frac{1}{\\nu}\\left(\\frac{x - \\mu}{\\sigma}\\right)^2\\right)^{-(\\nu + 1)/2},\\quad -\\infty<x<\\infty,
+$$") 
+    parameters <- paste0("$\\nu = ", tdf,",$ $\\mu = ", m,",$ $\\sigma  = ", s, "$")
+    label="Student-t"
+}else if(selected_distribution=="skewnormal"){
+
+    xi <- signif(fit$Skewnormal[1, 1], 5)
+    omega <- signif(fit$Skewnormal[1, 2], 5)
+    alpha <- signif(fit$Skewnormal[1, 3], 5)   
+    equation <- paste0("$f_X(x)=\\frac{2}{\\omega}\\phi\\left(\\frac{x-\\xi}{\\omega}\\right)\\Phi\\left(\\alpha\\left(\\frac{x-\\xi}{\\omega}\\right)\\right),\\quad -\\infty<x<\\infty,$ 
+where $\\phi(.)$ and $\\Phi(.)$ are the probability density function and cumulative distribution function respectively of the standard normal distribution")
+    parameters=paste0("$\\xi = ", xi,",$ $\\omega  = ", omega, "$, $\\alpha  = ", alpha, "$")
+    label="Skew Normal"
+
+### Log Normal:
+}else if(selected_distribution=="lognormal"){
+
+    mu <- signif(fit$Log.normal[1, 1], 5)
+  sigsq <- signif(fit$Log.normal[1, 2]^2, 5)  
+  
+  equation <- paste0("$$f_X(x) = \\frac{1}{", x, "} \\times \\frac{1}{\\sqrt{2\\pi\\sigma^2}} 
+\\exp\\left(-\\frac{1}{2\\sigma^2}(\\ln ", x,"  - \\mu)^2\\right), \\quad x >", fit$limits[expert, 1],"$$ and $f_X(x)=0$ otherwise, 
+with $$\\mu = ", mu,"$$ $$\\sigma^2  = ", sigsq, "$$")
+  
+  if(fit$limits[1, 1] != 0){
+    shiftLognormal <- paste0("Log normal distribution shifted to have support over the interval $(",
+                               fit$limits[expert, 1],
+                               ",\\, \\infty )$.")
+  }else{
+    shiftLognormal <- NULL
+  }
+  equation = paste(equation, shiftLognormal)
+  parameters=""
+  label="Log Normal"
+}
+
+```
+**Distribution:** `r paste(label)`  
+**Parameters:** `r paste(parameters)`  
+  
+**Equation**: `r paste(equation)`
+
+```{r fig.width=6.5, fig.height=4}
+
+plotfit(fit, d = selected_distribution,
+        ql=ql,qu=qu,
+        xl=xl, xu=xu, 
+        fs=fs,
+        xlab=xlab,
+        startDate=startDate,
+        endDate=endDate,
+        nBins=nBins,
+        ybreaks=ybreaks,
+        chips=chips)
+
+```
+
+# Feedback for the fit
+
+```{r results='asis'}
+fqc<-c(0.1,0.9,0.5)  
+bin.left<-bin.left[min(which(chips!=0))]
+bin.right<-bin.right[max(which(chips!=0))]
+fpc<-c(bin.left,bin.right)
+
+fbs<-generateFeedbackSummary(fit,dist=selected_distribution,fqc=fqc,fpc=fpc)
+feedbackText(fbs)
+```
+
+# Post-elicitation notes
+
+```{r echo=FALSE, results='asis'}
+
+cat(user_notes)
+
+```
+
+# Additional Information
+
+## Custom feedback
+
+```{r results='asis'}
+
+fbs<-generateFeedbackSummary(fit,dist=selected_distribution,fqc=fq,fpc=fp)
+
+cat("**Additional feedback for selected quantiles**\n\n")
+knitr::kable(round(fbs$values),2)
+cat("**Additional feedback for selected probabilities**\n\n")
+knitr::kable(round(fbs$probs,2))
+
+```
+## Elicited cumulative probabilities
+
+```{asis, echo = roulette}
+Implied cumulative probabilities used for distribution fitting are as follows:
+```
+
+```{r}
+expert <- 1
+sf <- 3
+mydf <- data.frame( fit$vals[expert, ], fit$probs[expert, ])
+
+colnames(mydf) <- c( "$x$", "$P(X\\le x)$")
+knitr::kable(round(mydf,2))
+```
+
+  
+
+All parameter values reported to 3 significant figures.   
+
+Probabiliites provided either to 2 decimal places or as percentage.  
+
+
+
+

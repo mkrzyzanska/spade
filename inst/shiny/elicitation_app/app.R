@@ -25,17 +25,19 @@ endDate<-1950
               style = "font-size: 1.1em; cursor: pointer;margin-bottom: 20px;",
               tags$strong("Metadata (click here to collapse / expand)\n")
             ),
+          textInput("Date", label = "Date", value = format(Sys.time(), '%d %B %Y')),
           textInput("Expert", label = "Expert", value = ""),
           textInput("Facilitator", label = "Facilitator", value = ""),
           textInput("FindType", label = "Find Type", value = ""),
           textInput("EoI", label = "Event of Interest", value = ""),
           textInput("UFI", label = "Unique Find Identifier", value = ""),
           textInput("ULI", label = "Unique Location Identifier", value = ""),
-          textInput("USI", label = "Unique Site Identifier", value = "")
+          textInput("USI", label = "Unique Site Identifier", value = ""),
+          textInput("PoE", label = "Portofolio of Evidence", value = "")
         )),
         wellPanel(
           tags$details(
-            open = TRUE,  # <-- opened by default
+            collapsed = TRUE,  # <-- opened by default
             tags$summary(
               style = "font-size: 1.1em; cursor: pointer;margin-bottom: 20px;",
               tags$strong("Probability calculator (click here to collapse / expand)\n")
@@ -50,62 +52,14 @@ endDate<-1950
                  numericInput("tokenProb", h5("Token's probability:"), value=NULL, min = 0,max=1,step=0.001))
         ))),
         wellPanel(
-          h5("Fitting and feedback"),
-          checkboxInput("showFittedPDF", label = "show fitted PDF"),
-          checkboxInput("showFittedCDF", label = "show fitted CDF"),
-          checkboxInput("selectDistribution", label = "Select Custom Distribution"),
-           conditionalPanel(
-            condition = "input.selectDistribution == true",
-
-          selectInput("dist", label = "Distribution",
-                      choices =  list('Best fitting' = "best",
-                                      Histogram = "hist",
-                                      Normal = "normal",
-                                      'Student-t' = "t",
-                                      'Skew normal' = "skewnormal",
-                                      Gamma = "gamma",
-                                      'Log normal' = "lognormal",
-                                      'Log Student-t' = "logt",
-                                      Beta = "beta",
-                                      'Mirror gamma' = "mirrorgamma",
-                                      'Mirror log normal' = "mirrorlognormal",
-                                      'Mirror log Student-t' = "mirrorlogt",
-                                      'Natural Cubic Spline' = "NS",
-                                      'Monotonic P-spline' = "MP")
-                     ),
-
-               conditionalPanel(
-          condition = "input.dist == 'NS'",
-          numericInput("bs_degree", label = h5("Degress of freedom (cubic spline)"),
-                     value = 5),
-          ),
-        conditionalPanel(
-        condition = "input.dist == 'NS' || input.dist == 'MP'",
-               checkboxInput("exponential_tails", label = "Model exponential decay on tails"),
-            conditionalPanel(
-                condition = "input.exponential_tails == true",
-                   numericInput("ltp", label = h5("Left tail points"),
-                     value = 4),
-                   numericInput("rtp", label = h5("Right tail points"),
-                     value = 4),
-                   numericInput("edr", label = h5("Tails exponential decay rate"),
-                     value = 0.1))
-        ),
-        conditionalPanel(
-          condition = "input.dist == 't' || input.dist == 'logt' || input.dist == 'mirrorlogt'",
-          numericInput("tdf", label = h5("Student-t degrees of freedom"),
-                     value = 10)
-          ),
-      #  checkboxInput("showCustomFeedback", label = "Custom Feedback"),
-      #  conditionalPanel(condition = "input.showCustomFeedback == true",
-      #  textInput("fq", label = h5("Feedback quantiles"),
-      #            value = "0.1, 0.9"),
-      #   tableOutput("valuesPDF"),
-      #  uiOutput("feedbackProbabilities"),
-      #  tableOutput("fittedProbsPDF")
-        ),
-             checkboxInput("showCustomFeedback", label = "Custom Feedback"),
-        conditionalPanel(condition = "input.showCustomFeedback == true",
+          tags$details(
+            collapsed = TRUE,  # <-- opened by default
+            tags$summary(
+              style = "font-size: 1.1em; cursor: pointer;margin-bottom: 20px;",
+              tags$strong("Show Custom Feedback (click here to collapse /expand)\n")
+            ),
+             #checkboxInput("showCustomFeedback", label = "Show Custom Feedback"),
+        #conditionalPanel(condition = "tag$details$open == TRUE",
         textInput("fq", label = h5("Feedback quantiles"),
                   value = "0.1, 0.9"),
          tableOutput("valuesPDF"),
@@ -113,8 +67,8 @@ endDate<-1950
         tableOutput("fittedProbsPDF"),
         uiOutput("hdrProbability"),
         tableOutput("fittedHDR")
-          )
-        )
+         # )
+        ))
 
       ),
             mainPanel(
@@ -126,64 +80,66 @@ endDate<-1950
 
               wellPanel(
                 fluidRow(
-                textInput("QoI", label = "Quantity of Interest", value = "")
+                  column(8,
+                textInput("QoI", label = "Quantity of Interest (fill in the metadata to generate automatically)", value = "")
+                  ),
+                column(4,
+                       fileInput("load_rds", "Import date", accept = ".rds")
+                )
                 ),
                 fluidRow(
-                column(2,
-                       numericInput("startDate", label = h5("Earliest Plausible Date"),
-                       value = 8000,min = .Machine$double.eps),
-                      ),
-
-                column(2, selectInput("sdate", label = h5("\u00A0"), width = "100px",
-                      choices =  list(BCE = "bce",
-                          CE = "ce"
-
-                                      )),
+                column(2,uiOutput("start_date_container")
+                       #numericInput("startDate", label = "Earliest Date",
+                       #value = 8000,min = .Machine$double.eps),
+                      #checkboxInput("earlyHard", label = "hard boundary")
                       ),
 
                 column(2,
-                       numericInput("endDate", label = h5("Latest Plausible Date  "),
-                       value = 2025,min = .Machine$double.eps),
+                      uiOutput("sdate_container")
+                      #selectInput("sdate", label = "\u00A0", width = "100px",
+                      #choices =  list(BCE = "bce", CE = "ce")),
                       ),
 
-                column(2, selectInput("edate", label = h5("\u00A0"), width = "100px",
-                      choices =  list(CE = "ce",
-                                      BCE = "bce"
-                                      )),
-                      ),
                 column(2,
-                  fileInput("load_rds", "Import date", accept = ".rds")
-                )),
+                       uiOutput("end_date_container")
+                       #numericInput("endDate", label = "Latest Date  ",
+                       #value = 2025,min = .Machine$double.eps),
+                       #checkboxInput("earlyHard", label = "hard boundary")
+                      ),
+
+                column(2,
+                      uiOutput("edate_container")
+                      #selectInput("edate", label = "\u00A0", width = "100px",
+                      #choices =  list(CE = "ce",  BCE = "bce")),
+                      ),
+                column(2, selectInput("outFormat", label = "Report format",
+                                      choices = list('html' = "html_document",
+                                                     'pdf' = "pdf_document",
+                                                     'Word' = "word_document")),
+                       downloadButton("report", "Download report")),
+                column(2, selectInput("exportFormat", label = "Export format",
+                                      choices = list( 'R' = "r_file",
+                                                      'json' = "json_file",
+                                                      'csv' = "csv_file")),
+
+
+                       downloadButton("download_rds", "Export Results"))
+                ),
+
                 fluidRow(
-                  column(2,
-                         numericInput("gridHeight",
-                                      label = h5(tags$b("Grid height")), value = 10, min  = 1)
-                  ),
-                    column(2,
-                         numericInput("fs", label = h5("Font size (plots)"), value = 16)
-                      ),
-                     column(2, selectInput("outFormat", label = h5("Report format"),
-                                        choices = list('html' = "html_document",
-                                                       'pdf' = "pdf_document",
-                                                       'Word' = "word_document")),
-                            downloadButton("report", "Download report")),
-
-                    column(2, selectInput("exportFormat", label = h5("Export format"),
-                                          choices = list( 'R' = "r_file",
-                                                         'json' = "json_file",
-                                                         'csv' = "csv_file")),
-
-
-                           downloadButton("download_rds", "Export Results"))
-              ),
-              checkboxInput("customiseGraph", label = "Customise the number of bins"),
-
+              column(4,
+                     uiOutput("checkbox_container")
+                     #checkboxInput("customiseGraph", label = "Customise the number of bins")
+                     ),
+              column(2, actionButton("reset_tokens", "Clear token allocation", icon = icon("refresh"), class = "btn-danger"))
+                ),
+              #uiOutput("bins_ui_container")
               conditionalPanel(condition = "input.customiseGraph == true",
                   fluidRow(
                       column(2,
-                      numericInput("nBins", label = h5("Number of bins"),
-                         value = NULL, min = 3)
-                        ),
+                      uiOutput("nBins_ui"))
+                   #   numericInput("nBins", label = "Number of bins",
+                  #     value = NULL, min = 3) ),
                       #,
                       # column(1, offset = 1, actionButton("exit", "Quit"))
                   )
@@ -191,8 +147,40 @@ endDate<-1950
             ),
               hr(),
 
-              tabsetPanel(
-                  tabPanel("Roulette",
+              tabsetPanel(id = "tabs",
+                  tabPanel("Token Allocation",value="tokens",
+
+                          wellPanel(style="background: white;border:0",
+                            tags$details(
+                              collapsed = TRUE,  # <-- opened by default
+                              tags$summary(
+                                style = "font-size: 1.1em; cursor: pointer;margin-bottom: 1px;",
+                                tags$strong("Click here to customise the plot\n")
+                              ),
+                          #checkboxInput("customisePlot", label = "Customise the plot"),
+                           #conditionalPanel(condition = "input.customisePlot == true",
+                           fluidRow(
+                             column(2,
+                                    numericInput("gridHeight",
+                                                 label = h5("Grid height"), value = 10, min  = 1)
+                             ),
+                             column(2,
+                                    numericInput("fs", label = h5("Font size (plots)"), value = 16)
+                             ),
+                             column(2,
+                                     selectInput("colour", label = h5("Colour"),
+                                                 choices =  list(Blue = "slateblue",
+                                                   Green = "darkseagreen",
+                                                   Red= "red",
+                                                   Orange="orange",
+                                                   Purple="purple",
+                                                   Pink="pink",
+                                                   Brown="brown",
+                                                   Grey="grey"
+                                                                  )))
+
+
+                           ))),
                            plotOutput("roulette",
                                                 click = "location"),
                            helpText("Click directly in the plot to allocate tokens to time intervals.
@@ -211,10 +199,41 @@ endDate<-1950
                             )
                                 )
                           ),
-                tabPanel("PDF",
-                         plotOutput("distPlot"),
+                tabPanel("Distribution Fitting and Feedback", value="PDF",
+                         checkboxInput("selectDistribution", label = "Select Custom Distribution"),
+                         fluidRow(
                          conditionalPanel(
-                           condition = "input.showFittedPDF == true",
+                           condition = "input.selectDistribution == true",
+
+                           column(4,
+                                  selectInput("dist", label = "Distribution",
+                                       choices =  list('Best fitting' = "best",
+                                                       Histogram = "hist",
+                                                       Normal = "normal",
+                                                       'Student-t' = "t",
+                                                       'Skew normal' = "skewnormal",
+                                                       Gamma = "gamma",
+                                                       'Log normal' = "lognormal",
+                                                       'Log Student-t' = "logt",
+                                                       Beta = "beta",
+                                                       'Mirror gamma' = "mirrorgamma",
+                                                       'Mirror log normal' = "mirrorlognormal",
+                                                       'Mirror log Student-t' = "mirrorlogt",
+                                                       'Natural Cubic Spline' = "NS",
+                                                       'Monotonic P-spline' = "MP")
+                          ) ),
+
+                           conditionalPanel(
+                             condition = "input.dist == 't' || input.dist == 'logt' || input.dist == 'mirrorlogt'",
+
+                             column(4,
+                                    numericInput("tdf", label = "Student-t degrees of freedom",
+                                          value = 10)
+                           )
+                         ))),
+                         plotOutput("distPlot"),
+                        # conditionalPanel(
+                         #  condition = "input.showFittedPDF == true",
                            wellPanel(
                              fluidRow(
                                column(
@@ -252,10 +271,11 @@ endDate<-1950
                              ))
 
                            )
-                         )),
-                tabPanel("CDF", plotOutput("cdf"),
-                         conditionalPanel(
-                           condition = "input.showFittedCDF == true",
+                         #)
+                         ),
+                tabPanel("Cumulative Distibution Function", value="CDF",plotOutput("cdf"),
+                         #conditionalPanel(
+                          # condition = "input.showFittedCDF == true",
                            fluidRow(
                              column(4,
                                     downloadButton('downloadCDF',
@@ -264,13 +284,14 @@ endDate<-1950
                                     uiOutput("setCDFxaxisLimits")
                              )
                            )
-                         )),
+                         #)
+                         ),
 
                 tabPanel("Help",
                          includeHTML(system.file("shinyAppFiles", "help.html",
                                                  package="SHELF"))
                          ),
-                selected = startingPanel
+                selected = "tokens"
               )
       )
     )
@@ -286,7 +307,7 @@ endDate<-1950
 
     observeEvent(input$load_rds, {
       req(input$load_rds)
-
+      rl$chips <- rl$chips <- rep(0, nBins())
       is_loading(TRUE)
 
       path <- input$load_rds$datapath
@@ -303,15 +324,16 @@ endDate<-1950
       pending_dat(dat)
       pending_chips_applied(FALSE)
 
-      #if(dat$customisedBins==TRUE){
-       # print("Update checkbox")
+      #if(input$customiseGraph==FALSE){
+      #  trigger_pause <-TRUE
+      #}else{trigger_pause<-FALSE}
+
+        print("Updating checkbox")
         updateCheckboxInput(session, "customiseGraph", value = TRUE)
-        print("Yes")
-        print(input$customiseGraph)
-      #  updateNumericInput(session, "nBins", value = as.numeric(dat$nBins))
+        updateNumericInput(session, "nBins", value = as.numeric(dat$nBins))
+        print(dat$nBins)
       #}else{
       #  updateCheckboxInput(session, "customiseGraph", value = FALSE)
-      #  print(input$customiseGraph)
       #}
 
       # --- restore metadata inputs ---
@@ -322,30 +344,34 @@ endDate<-1950
       updateTextInput(session, "UFI",         value = dat$metadata$UFI         %||% "")
       updateTextInput(session, "ULI",         value = dat$metadata$ULI         %||% "")
       updateTextInput(session, "USI",         value = dat$metadata$USI         %||% "")
+      updateTextInput(session, "PoE",         value = dat$metadata$PoE         %||% "")
       updateTextAreaInput(session, "user_notes", value = dat$notes %||% "")
 
         if (!is.null(dat$startDate)){
+          print("Updating start date")
           updateNumericInput(session, "startDate", value = abs(dat$startDate))
           updateSelectInput(session, "sdate", selected = ifelse(dat$startDate<1,"bce","ce"))
 
         }
 
         if (!is.null(dat$endDate)){
+          print("Updating end date")
           updateNumericInput(session, "endDate", value = abs(dat$endDate))
           updateSelectInput(session, "edate", selected = ifelse(dat$endDate<1,"bce","ce"))
 
         }
 
+      print("Updating N bins")
       updateNumericInput(session, "nBins", value = as.numeric(dat$nBins))
 
       if(dat$selected_distribution!="best"){
+        print("Selected best distribution")
         updateCheckboxInput(session, "selectDistribution", value = TRUE)
-        updateCheckboxInput(session, "showFittedPDF", value = TRUE)
         updateSelectInput(session, "dist",
                                              selected = dat$selected_distribution)
       }else{
+        print("selected custom distribution")
         updateCheckboxInput(session, "selectDistribution", value = FALSE)
-        updateCheckboxInput(session, "showFittedPDF", value = FALSE)
         updateSelectInput(session, "dist",
                           selected = "best")
       }
@@ -365,10 +391,8 @@ endDate<-1950
 
 
         session$onFlushed(function() {
+        print("On flused")
         #a<-nBins()
-        #print(paste("nbins:",a))
-        print(dat$nBins)
-
         # ensure nBins reactiveVal matches loaded value
         #nBins(dat$nBins)
 
@@ -377,59 +401,28 @@ endDate<-1950
 
         # 3) now restore chips
        # if (!is.null(dat$chips)) {
-          print("Flusehd")
           x <- dat$chips
           nb <- isolate(nBins())
+          print("nBins isolated")
 
           # ensure correct length
           length(x) <- nb
           x[is.na(x)] <- 0
 
           rl$chips <- x
+          print("rl updated")
+          #if(trigger_pause==TRUE){
+            pause(TRUE)
+          #  }
+          #else(pause_override(TRUE))
+          print(pause)
       #  }
         is_loading(FALSE)
       }, once = TRUE
       )
     })
 
-    observe({
-      dat <- pending_dat()
-      if (is.null(dat)) return()
-      if (isTRUE(pending_chips_applied())) return()
 
-      # Require the key things your chips depend on
-      req(startDate(), endDate(), nBins())
-
-      # Compute the internal target values from the saved file
-      target_start <- ifelse(dat$startDate < 0, dat$startDate+1, dat$startDate)
-      target_end   <- ifelse(dat$endDate < 0, dat$endDate+1, dat$endDate)
-      target_bins  <- as.numeric(dat$nBins)
-
-      print(paste("target_start",target_start,startDate()))
-
-      # If any are NA, don't proceed
-      req(is.finite(target_start), is.finite(target_end), is.finite(target_bins))
-
-      # Check match (use tolerance for safety)
-      same_start <- isTRUE(all.equal(startDate(), target_start, tolerance = 0))
-      same_end   <- isTRUE(all.equal(endDate(),   target_end,   tolerance = 0))
-      same_bins  <- isTRUE(all.equal(nBins(),     target_bins,  tolerance = 0))
-
-      if (!(same_start && same_end && same_bins)) return()
-      # NOW it's safe to apply chips
-      if (!is.null(dat$chips)) {
-        x <- dat$chips
-        nb <- nBins()
-        length(x) <- nb
-        x[is.na(x)] <- 0
-        rl$chips <- x
-        rl$allBinsPr <- cumsum(rl$chips)/sum(rl$chips)
-        rl$nonEmpty <- rl$allBinsPr > 0 & rl$allBinsPr < 1
-      }
-
-      pending_chips_applied(TRUE)
-      pending_dat(NULL)  # clear pending load
-    })
 
     build_qoi <- function(eoi, findtype,UFI,ULI,USI) {
       eoi <- trimws(eoi %||% "")
@@ -440,11 +433,10 @@ endDate<-1950
 
       # Only include bits that exist
       parts <- c(
-        "The date (year) of",
-        if (nzchar(eoi)) eoi else "the Event of Interest",
-        "of the",
-        if (nzchar(findtype)) findtype else "artefact",
-        if (nzchar(UFI)) paste0("(", UFI, ")") else "(Unique Find Identifier)",
+        "The date (year)",
+        if (nzchar(eoi)) paste("of",eoi,"of") else "associated with the event of interest from the life-cycle of",
+        if (nzchar(findtype)) paste("the", findtype) else "an artefact",
+        if (nzchar(UFI)) paste0("(", UFI, ")") else NULL,
 
         if (nzchar(ULI)) (if(tolower(eoi)=="deposition") paste0("in context ", ULI) else paste0("associated with context ", ULI)) else NULL,
         if (nzchar(USI)) paste0("(", USI,")") else NULL
@@ -452,6 +444,166 @@ endDate<-1950
 
       paste(parts, collapse = " ")
     }
+
+    output$start_date_container <- renderUI({
+
+      current_val <- if (!is.null(input$startDate)) input$startDate else 8000
+      if (sum(rl$chips) == 0) {
+        # If chips are gone, show the ACTUAL working date input
+        numericInput("startDate", "Earliest Date", value = current_val)
+
+      } else {
+        # If chips are present, show a "fake" version that doesn't work
+        div(
+          style = "position: relative; display: inline-block;",
+          div( style = "opacity: 0.5; cursor: not-allowed;", # Make it look grey/locked
+          numericInput("startDate_disabled", "Earliest Date", value = current_val)
+        ),
+        actionLink("date_click_trap", "",
+                    style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;")
+        )
+
+      }
+    })
+
+    output$end_date_container <- renderUI({
+
+      current_val <- if (!is.null(input$endDate)) input$endDate else 2025
+      if (sum(rl$chips) == 0) {
+        # If chips are gone, show the ACTUAL working date input
+        numericInput("endDate", "Latest Date", value = current_val)
+
+      } else {
+        # If chips are present, show a "fake" version that doesn't work
+        div(
+          style = "position: relative; display: inline-block;",
+          title = "Reset tokens to edit this field",
+          div( style = "opacity: 0.5; cursor: not-allowed;", # Make it look grey/locked
+               numericInput("endDate_disabled", "Latest Date", value = current_val)
+          ),
+          actionLink("date_click_trap", "",
+                     style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;")
+        )
+
+      }
+    })
+
+    output$sdate_container <- renderUI({
+
+      current_val <- if (!is.null(input$sdate)) input$sdate else "bce"
+      if (sum(rl$chips) == 0) {
+        # If chips are gone, show the ACTUAL working date input
+        selectInput("sdate", label = "\u00A0", width = "100px",
+                     choices = list(BCE = "bce", CE = "ce"),
+                     selected = current_val)
+
+      } else {
+        # If chips are present, show a "fake" version that doesn't work
+        div(
+          style = "position: relative; display: inline-block; width: 100px;",
+          div(style = "pointer-events: none; opacity: 0.5;",
+              selectInput("sdate_disabled", label = "\u00A0", width = "100px",
+                          choices = list(BCE = "bce", CE = "ce"),
+                          selected = current_val)
+          ),
+          actionLink("sdate_click_trap", "",
+                     style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;")
+        )
+
+      }
+    })
+
+    output$edate_container <- renderUI({
+
+      current_val <- if (!is.null(input$edate)) input$edate else "ce"
+      if (sum(rl$chips) == 0) {
+        # If chips are gone, show the ACTUAL working date input
+        selectInput("edate", label = "\u00A0", width = "100px",
+                    choices = list(BCE = "bce", CE = "ce"),
+                    selected = current_val)
+
+      } else {
+        # If chips are present, show a "fake" version that doesn't work
+        div(
+          style = "position: relative; display: inline-block; width: 100px;",
+          div(style = "pointer-events: none; opacity: 0.5;",
+              selectInput("edate_disabled", label = "\u00A0", width = "100px",
+                          choices = list(BCE = "bce", CE = "ce"),
+                          selected = current_val)
+          ),
+          actionLink("sdate_click_trap", "",
+                     style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;")
+        )
+
+      }
+    })
+
+    output$checkbox_container <- renderUI({
+
+      # Get current state or default to FALSE
+      current_check <- isolate({
+        if (!is.null(input$customiseGraph)) input$customiseGraph else FALSE
+      })
+
+      if (sum(rl$chips) == 0) {
+        # --- ACTIVE STATE ---
+        checkboxInput("customiseGraph", label = "Customise the number of bins",
+                      value = current_check)
+
+      } else {
+        # --- INACTIVE STATE ---
+        div(
+          style = "position: relative; display: inline-block;",
+          # The Visual Fake
+          div(style = "pointer-events: none; opacity: 0.5;",
+              checkboxInput("customiseGraph_disabled", label = "Customise the number of bins",
+                            value = current_check)
+          ),
+          # The Click Trap (covers both the box and the text label)
+          actionLink("check_click_trap", "",
+                     style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;")
+        )
+      }
+    })
+
+    output$nBins_ui <- renderUI({
+
+      # 1. Capture the current value so it doesn't disappear when locking/unlocking
+      # We use isolate so the numericInput doesn't trigger its own re-render
+      current_bins <- isolate({
+        if (!is.null(input$nBins)) input$nBins else 10 # 10 is a fallback default
+      })
+
+      if (sum(rl$chips) == 0) {
+        # --- ACTIVE STATE ---
+        # This is the real input your code already uses
+        numericInput("nBins", label = "Number of bins", value = current_bins, min = 3)
+
+      } else {
+        # --- INACTIVE STATE ---
+        # We use a different ID here ("nBins_locked") to avoid the crash loop
+        div(
+          style = "opacity: 0.5; cursor: not-allowed;",
+          title = "Reset tokens to change the number of bins", # Tooltip
+          div(style = "pointer-events: none;",
+              numericInput("nBins_locked", label = "Number of bins", value = current_bins, min = 3)
+          )
+        )
+      }
+    })
+
+   # observeEvent(c(input$date_click_trap,
+  #                 input$sdate_click_trap,
+  #                 input$edate_click_trap,
+  #                 input$check_click_trap),
+   #                  {
+#
+ #                      showModal(modalDialog(
+  #                       "To change range of plausible values or the numbe of bins, please reset token allocation. This will remove all the allocated tokens from the graph.",
+  #                       size = "s",     # 's' for small, 'm' for medium, 'l' for large
+   #                      easyClose = TRUE # Allows user to click outside the box to close it
+  #                     ))
+  #                   }, ignoreInit = TRUE)
 
     observe({
       updateTextInput(
@@ -507,6 +659,7 @@ endDate<-1950
         }
     })
 
+
     trueStart <- reactive({
         req(input$startDate,input$sdate)
 
@@ -527,9 +680,15 @@ endDate<-1950
             end <- as.numeric(input$endDate)
         }})
 
+    prevStartDate <- reactiveVal()
     startDate <- reactive({
-        req(input$startDate,input$sdate, distributionRange())
+      req(input$startDate,input$sdate, distributionRange())
 
+      #current_chips_sum <- isolate(sum(rl$chips))
+
+      #if (current_chips_sum != 0) {
+      #  showNotification("You can't change the date until chips are 0!", type = "warning")
+      #}else{
         # Define the right start date depending on whether the date is CE or BCE
         if(input$sdate=="bce"){
             start <- as.integer(-input$startDate)+1
@@ -581,7 +740,7 @@ endDate<-1950
             return(NULL)
         }
 
-       # return(start)
+#     }  # return(start)
     })
 
     endDate <- reactive({
@@ -651,16 +810,17 @@ endDate<-1950
 
     # Feedback probabilities. Needs to know parameter limits ----
     output$feedbackProbabilities <- renderUI({
-      textInput("fp", label = h5("Feedback probabilities"),
+      textInput("fp", label = h5("Feedback probabilities (use negative values for BCE)"),
                 paste(c(startDate(),endDate()), collapse = ", "))
     })
     output$hdrProbability <- renderUI({
       textInput("hdr", label = h5("Highest Probability Dates"), "10")
     })
     fp <- reactive({
-      tryCatch(eval(parse(text = paste("c(", input$fp, ")"))),
+      tryCatch(
+        eval(parse(text = paste("c(", input$fp, ")"))
+             ),
                error = function(e){NULL})
-
     })
 
     hdr <- reactive({
@@ -691,6 +851,7 @@ endDate<-1950
 
     # Elicited probabilities and values ----
     p <- reactive({
+
       myp <- rl$allBinsPr[rl$nonEmpty]
       myp
     })
@@ -716,48 +877,34 @@ endDate<-1950
             else{return(NULL)}
         })
 
-    # nBins <- reactive({
-
-     #     req(nIntervals(),distributionRange())
-
-         ### Here we need to add a check mark if we want the automatic bin_width adjustment
-
-     #   if (input$customiseGraph) {
-     #     return(input$nBins)
-     #   }else{
-     #       if(is.numeric(nIntervals()) & is.numeric(distributionRange())){
-     #         if(distributionRange()>10&distributionRange()<=20){
-     #             return(nIntervals()/2)
-     #         }else if(distributionRange()>20&distributionRange()<=60){
-     #             return(nIntervals()/5)
-     #         }else if(distributionRange()>60){
-     #             return(nIntervals()/10)
-     #         }else{
-     #             return(nIntervals())}}
-     #       else{
-     #         return(NULL)
-     #   }
-     #}
-    #})
-
 nBins <- reactiveVal()  # Reactive value to store nBins
 
+pause <-reactiveVal(FALSE)
+unpause <-reactiveVal(FALSE)
+pause_override<-reactiveVal(FALSE)
 # When checkbox is checked, use input$nBins
 observeEvent(input$customiseGraph, {
-  if (is_loading()) return()
-  if (input$customiseGraph) {
-    if(is.na(input$nBins)){
+  print(input$Bins)
+  if (input$customiseGraph==TRUE) {
+    if(is.null(input$nBins)|is.na(input$nBins)){
+      print("update on customise graph1")
       updateNumericInput(session, "nBins", value = nBins())
 
     }
     #updateNumericInput(session, "nBins", value = nBins())
-    print(paste("value_third",(input$nBins)))
+    if(pause()!=TRUE){
+    print(pause)
+    print(input$nBins)
     nBins(input$nBins)  # Set nBins to user input when the checkbox is checked
+    print("update on customise graph2")}else{
+      print(pause)
+      print("paused successfully")
+    }
   } else {
     # Reset to auto-calculated bins when checkbox is unchecked
     req(nIntervals(), distributionRange())
-    print("Observe Event Reset")
     updateBins()
+    print("update on customise graph3")
   }
 })
 
@@ -765,16 +912,22 @@ observeEvent(input$customiseGraph, {
 observeEvent(input$nBins, {
   #if (is_loading()) return()  # Prevent updates during loading
   if (input$customiseGraph&& !is.null(input$nBins)) {
-    print(paste("value_fourth",(input$nBins)))
     nBins(input$nBins)  # Keep updating nBins immediately when input$nBins changes
   }
 }, ignoreInit = TRUE)
 
+
+observeEvent(input$reset_tokens, {
+  # Assign your specific values here
+  rl$chips <- rl$chips <- rep(0, nBins())
+
+})
+
 # Automatically update nBins when the checkbox is unchecked
 observe({
-  if (!input$customiseGraph) {  # Only run when unchecked
+  if (!isTRUE(input$customiseGraph)) {  # Only run when unchecked
+    print("unchecked customise graph")
     req(nIntervals(), distributionRange(),startDate(),endDate())  # Ensure required values exist
-    print("Observe reset")
     updateBins()  # Call function to update bins dynamically
     rl$chips <- rep(0, nBins())
   }
@@ -782,10 +935,15 @@ observe({
 
 # Helper function to update bins dynamically when in auto mode
 updateBins <- function() {
-  if (is_loading()) return()
-  if (input$customiseGraph) return() # Skip if in custom mode
-  print("Updating bins")
+  #if (is_loading()){
+  #  print("skipped updating bins on is loading")
+  #  return()
+  #}
+  if (input$customiseGraph==TRUE) {
+    print("skipped updating bins on customise graph")
+    return()}else{# Skip if in custom mode
   if (is.numeric(nIntervals()) & is.numeric(distributionRange())) {
+    print("Updating bins")
     if (distributionRange() > 20 & distributionRange() <= 50) {
       nBins(nIntervals() / 2)
     } else if (distributionRange() > 50 & distributionRange() <= 100) {
@@ -813,16 +971,7 @@ updateBins <- function() {
     nBins(NULL)  # Set to NULL if values are invalid
   }
 }
-
-
-
-    # nBins <- reactive({
-    #  req(input$nBins)
-    #  if(is.integer(input$nBins) & input$nBins > 0){
-    #    return(input$nBins)}else{
-    #      return(NULL)}
-    #
-    #})
+}
     gridHeight <- reactive({
       req(input$gridHeight)
       if(is.integer(input$gridHeight) & input$gridHeight > 0){
@@ -831,10 +980,7 @@ updateBins <- function() {
 
     })
     bin.width <- reactive({
-      print("Bin width update")
       req(startDate(),endDate(), nBins())
-      print(startDate())
-      print(endDate())
       abs((endDate()-startDate())/ nBins())
     })
     bin.left <- reactive({
@@ -859,12 +1005,25 @@ updateBins <- function() {
 
       # Watch for changes in nBins() and update rl$chips accordingly
 observe({
-  print("Trigger")
   # Ensure nBins is not NULL or invalid before updating rl$chips
   req(nBins())
-
+  print("updating rl$chips")
   # Update rl$chips based on the current value of nBins
+  pa <- isolate(pause())
+  up <-isolate(unpause())
+  po <- isolate(pause_override())
+
+  if(pa!=TRUE & up!=TRUE){
+    print(pa)
   rl$chips <- rep(0, nBins())  # Update rl$chips with the new number of bins
+  }
+  else if(pa==TRUE & up==TRUE){
+    print("unpausing")
+    isolate({
+    pause(FALSE)
+    unpause(FALSE)
+    })
+  }
 })
 
 
@@ -901,45 +1060,60 @@ observe({
     observeEvent(input$limits,{
       req(nBins())
       if(is.integer(nBins()) & nBins() > 0){
+        print("rl chips update on limit change")
         rl$chips <- rep(0, nBins())}
     })
 
       observeEvent(input$startDate,{
-      req(nBins())
-      if(is.integer(nBins()) & nBins() > 0){
+      req(nBins(),rl$chip==0)
+
+      if(is.integer(nBins()) & nBins() > 0 & pause()!=TRUE&pause_override()!=TRUE){
+        print("rl update on start date")
         rl$chips <- rep(0, nBins())}
     })
 
       observeEvent(input$endDate,{
       req(nBins())
-      if(is.integer(nBins()) & nBins() > 0){
+        print(pause)
+        print("test print")
+      if(is.integer(nBins()) & nBins() > 0 & pause()!=TRUE&pause_override()!=TRUE){
+        print("rl update on end date")
         rl$chips <- rep(0, nBins())}
+      if(pause_override()==TRUE){
+          print("unpause pause override triggered")
+          pause_override(FALSE)
+
+        }else if(pause()==TRUE){
+       print("unpause triggered")
+         unpause(TRUE)
+      }
     })
     # Fit distributions to elicited judgements ----
     myfit <- reactive({
-      req(startDate(),endDate(), v(), p(), input$tdf,input$ltp,input$rtp,input$edr,trueStart(),trueEnd())
-      print(input$ltp)
+      #req(startDate(),endDate(), v(), p(), input$tdf,trueStart(),trueEnd())
       check <- checkJudgementsValid(probs = p(), vals = v(),
                            tdf = input$tdf,
                            lower = startDate(),
                            upper= endDate()
                                    )
       if(check$valid == TRUE){
-      fitdist2(vals = v(), probs = p(),cn=cn(), lower = trueStart(),
-              upper = trueEnd(), width=bin.width(),
-              tdf = input$tdf,bs_degree=input$bs_degree,exponential_tails=input$exponential_tails,rtp=input$rtp,ltp=input$ltp,edr=input$edr)
-      }
+       return(fitdist(vals = v(), probs = p(), lower = trueStart(), upper = trueEnd(),tdf = input$tdf))
+      }else{
+        return(check$error)}
     })
 
     # All plots have separate functions, so can be called from
     # both renderPlot, and from ggsave() for downloading
 
     plotPDF <- function(){
-      req(myfit(), xlimPDF(), fq(), input$fs, quantileValues(),gridHeight())
+      a<-myfit()
+     req(myfit(), xlimPDF(), fq(), input$fs,gridHeight(),input$tabs)#,quantileValues())
+      if(input$tabs == "PDF"){
 
-      if(input$showFittedPDF){
+        #if(!is.table(myfit())){
+        #}else{
 
-        dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best","NS","MP")
+       dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best","NS","MP")
 
         if(input$selectDistribution){
         suppressWarnings(plotfit(myfit(), d = input$dist,
@@ -963,8 +1137,7 @@ observe({
                                  nBins=nBins(),
                                  ybreaks=max(rl$chips),
                                  chips=rl$chips))}
-      }
-
+      }#}
 
     }
 
@@ -996,7 +1169,7 @@ observe({
                   input$fs,
                   fit = myfit(),
                   dist = mydist,
-                  showFittedCDF = input$showFittedCDF,
+                  showFittedCDF = ifelse(input$tabs == "CDF", TRUE, FALSE),
                   showQuantiles = TRUE,
                   ql = fq()[1],
                   qu = fq()[2],
@@ -1012,22 +1185,16 @@ observe({
     plotRoulette <- function(){
 
       req(startDate(),endDate(), input$fs, nBins(), gridHeight(), bin.left(),
-          bin.right(),rl)
-      print(v())
-      print(p())
-      print(nBins())
-      print(paste("rl_chips:",rl$chips))
+          bin.right(),rl,input$colour)
+
 
       xticks<-seq(startDate(),endDate(), length.out=nBins()+1)
-
-     # print(paste("xticks",xticks))
 
       convert_year <- function(year) {
           if (year < 1) year-1 else year
       }
 
      new_ticks<-sapply(xticks,convert_year)
-     #print(paste("new_ticks",new_ticks))
      if (all(new_ticks < 0)) {
         x_lab = "YEAR BCE"
      } else if (all(new_ticks > 0)) {
@@ -1068,10 +1235,9 @@ observe({
       }
 
       for(i in 1:nBins()){
-          print(i)
         if(rl$chips[i]>0){
           rect(rep(bin.left()[i],rl$chips[i]),c(0:(rl$chips[i]-1)),
-               rep(bin.right()[i],rl$chips[i]),c(1:rl$chips[i]),col=2)
+               rep(bin.right()[i],rl$chips[i]),c(1:rl$chips[i]),col=input$colour)
         }
       }
 
@@ -1107,7 +1273,7 @@ observe({
 
         }
 
-        return(data.frame(quantiles=fq(), values=to.BCECE(values,toText=TRUE)))
+        return(data.frame(quantile=fq(), year=to.BCECE(values,toText=TRUE)))
       }
 
     })
@@ -1133,7 +1299,6 @@ observe({
                                                                           1])]
 
         }
-        print(values)
         return(values=values)
       }
 
@@ -1149,10 +1314,6 @@ observe({
       FB <- feedback(myfit(),
                        values = fpc,
                        ex = 1)
-        print(rl$chips)
-        print(bin.left())
-         print(fpc)
-        print(input$dist)
         if(input$selectDistribution&&input$dist != "best"){
              probs <- FB$fitted.probabilities[, input$dist]
 
@@ -1161,9 +1322,7 @@ observe({
                                         as.character(myfit()$best.fitting[1,
                                                                           1])]
         }
-      print(probs)
       df<-data.frame(probs=probs,vals=c(left_bin,right_bin))
-      print(df)
       return(df)
 
 
@@ -1177,7 +1336,6 @@ observe({
                        quantiles = c(0.1,0.9),
                        ex = 1,hdr.prob=10)
 
-        print(input$dist)
         if(input$selectDistribution&&input$dist != "best"){
              hdr <- HDR$fitted.hdr[[input$dist]]
         }else{
@@ -1188,8 +1346,7 @@ observe({
     #  df2<-as.data.frame(df)
     #  colnames(df2)<-c("lower","upper")}
       df<-t(as.data.frame(hdr))
-      print("Normal")
-      print(df)
+
       return(df)
 
 
@@ -1259,8 +1416,10 @@ observe({
     probabilityValues <- reactive({
       req(fp(), myfit())
 
+      fp_tmp<-to.BCECE(fp()[fp()!=0],reverse=TRUE)
+
       FB <- feedback(myfit(),
-                     values = fp(),
+                     values =fp_tmp,
                      ex = 1)
 
       if(input$selectDistribution&&input$dist != "best"){
@@ -1272,19 +1431,16 @@ observe({
 
       }
 
-      return(data.frame(values=to.BCECE(fp(),toText=TRUE), probabilities = probs))
+      return(data.frame(year=to.BCECE(fp_tmp, toText=TRUE), probability = probs))
 
 
     })
 
     hdrValues <- reactive({
       req(hdr(), myfit())
-      #print("hdr")
-      #print(hdr())
 
       HDR <- feedback(myfit(), quantiles = c(0.1,0.9),ex = 1,hdr.prob=hdr())
 
-       # print(input$dist)
         if(input$selectDistribution&&input$dist != "best"){
              hdreg <- HDR$fitted.hdr[[input$dist]]
         }else{
@@ -1294,9 +1450,7 @@ observe({
       #df<-as.data.frame(df)
       #colnames(df)<-c("earlier","later")}
       df<-t(as.data.frame(hdreg))
-      #print("Normal")
       df<-t(as.data.frame(apply(df,2,to.BCECE,toText=TRUE)))
-      print(df)
 
       return(df)
 
@@ -1312,7 +1466,6 @@ observe({
       probabilityValues()
     })
     output$fittedHDR <- renderTable({
-      print("rendering")
       req(hdrValues())
       hdrValues()
     })
@@ -1415,17 +1568,27 @@ observe({
 
     output$download_rds <- downloadHandler(
         filename = function() {
-      paste0("my_object_", Sys.Date(), ".rds")
+        switch(input$exportFormat,
+               r_file = paste0("my_object_", Sys.Date(), ".rds"),
+              json_file = paste0("my_object_", Sys.Date(), ".json"),
+              csv_file = paste0("my_object_", Sys.Date(), ".csv"))
     },
+
     content = function(file) {
 
-      elicited_date <- list(metadata=list(expert = input$Expert,
+      if(grepl(".rds",file)==TRUE){
+
+
+      elicited_date <- list(metadata=list(
+                                  date = input$Date,
+                                  expert = input$Expert,
                                   facilitator = input$Facilitator,
                                   findtype= input$FindType,
                                   EoI= input$EoI,
                                   UFI = input$UFI,
                                   ULI = input$ULI,
-                                  USI = input$USI),
+                                  USI = input$USI,
+                                  PoE = input$PoE),
 
                         startDate=startDate(),
                         endDate=endDate(),
@@ -1436,7 +1599,22 @@ observe({
                           notes = input$user_notes
       )
       saveRDS(elicited_date, file)
-    }
+      }else if(grepl(".json",file)==TRUE){
+        writeLines(paste0('{"date":"', input$Date,
+                          '","expert":"', input$Expert,
+                         # '","facilitator":"', input$Facilitator,
+                        #  '","findtype":"', input$FindType,
+                        #  '","EoI":"', input$EoI,
+                        #  '","UFI":"', input$UFI,
+                        #  '","ULI":"', input$ULI,
+                        #  '","USI":"', input$USI,
+                        #  '","PoE":"', input$PoE,
+                        #  '}"'
+                          )
+          ,file)
+
+      }
+      }
   )
 
     output$download_notes <- downloadHandler(
@@ -1475,22 +1653,17 @@ observe({
 
         # Include roulette allocation
         QoI<- input$QoI
-        print(QoI)
 
        # Check selected distribution
-
         if(input$selectDistribution){
             selected_distribution<-input$dist}
         else{
             selected_distribution<-"best"}
-
-      print(selected_distribution)
-
           params <- list(fit = myfit(),
                          ql = fq()[1],
                          qu = fq()[2],
-                         xl = xlimPDF()[1],
-                         xu = xlimPDF()[2],
+                         xl = trueStart(),
+                         xu = trueEnd(),
                          fs = input$fs,
                          xlab = input$xLabel,
                          startDate=startDate(),
@@ -1509,13 +1682,14 @@ observe({
                          fp=fp(),
                          user_notes = input$user_notes,
                          expert = input$Expert,
+                         date = input$Date,
                          facilitator = input$Facilitator,
                          findtype= input$FindType,
                          EoI= input$EoI,
                          UFI = input$UFI,
                          ULI = input$ULI,
-                         USI = input$USI)
-
+                         USI = input$USI,
+                         PoE=input$PoE)
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document
         # from the code in this app).

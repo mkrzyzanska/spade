@@ -119,6 +119,15 @@ plotfit <- function(fit,
                      "mirror gamma", "mirror log normal",
                      "mirror log Student-t")
 
+  if(length(fit)==1){
+    emptyPlot <- ggplot2::ggplot() +
+      ggplot2::theme_void(base_size = fs) +
+      xlim(0, 10)
+      return(emptyPlot +
+               annotate("text",0,0,
+                        label=fit,
+                        hjust = 0, size = fs /2))
+  }else{
   if(is.na(ex)){
     index <- !is.na(c(0, fit$ssq[1, ]))}else{
       index <- !is.na(c(0, fit$ssq[ex, ]))
@@ -180,10 +189,9 @@ plotfit <- function(fit,
   if(d %in% colnames(fit$ssq)){
     if(is.na(ex)){
       noFit <- anyNA(fit$ssq[, d])
-     # print(noFit)
+
     }else{
       noFit <- anyNA(fit$ssq[ex, d])
-      #  print(noFit)
     }
 
   }
@@ -345,4 +353,5 @@ plotfit <- function(fit,
 
   }
 
+}
 }

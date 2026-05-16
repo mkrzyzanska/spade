@@ -4,7 +4,7 @@ output:
   html_document: default
   pdf_document: default
   word_document: default
-subtitle: "`r params$QoI`"
+date: "`r format(Sys.time(), '%d %B %Y, %H:%M')`"
 fontsize: 11pt
 params:
   fit: NA
@@ -19,7 +19,7 @@ params:
   xlab: NA
   nBins: NA
   fs: NA
-  xLabel: NA
+  xLable: NA
   startDate: NA
   endDate: NA
   ybreaks: NA
@@ -39,7 +39,6 @@ params:
   ULI: NA,
   USI: NA
   PoE: NA
-  date: NA
 ---
 
 
@@ -101,10 +100,8 @@ UFI = params$UFI
 ULI = params$ULI
 USI = params$USI
 PoE = params$PoE
-date = params$date
 ```
 
-**Date**: `r date`  
 **Expert**: `r expert`  
 **Facilitator**: `r faciliator`  
 **Find Type**: `r findtype`  

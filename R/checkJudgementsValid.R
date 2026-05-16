@@ -2,15 +2,13 @@ checkJudgementsValid <- function(probs, vals, tdf, lower, upper, silent = TRUE,
                                  excludeExponential = FALSE){
   valid <- TRUE
   error <- NULL
-  
   if(any(is.na(probs)) | any(is.na(vals)) ){
     valid <- FALSE
     error <- "missing values in probs/vals"
   }else{
-  
     if (length(probs) < 1){
       valid <- FALSE
-      error <- "need at least one elicited probability"
+      error <- "to fit a distribution please allocate tokens to at least two bins"
       }
     if (min(probs) < 0 | max(probs) > 1 ){
       valid <- FALSE
@@ -50,9 +48,9 @@ checkJudgementsValid <- function(probs, vals, tdf, lower, upper, silent = TRUE,
       error <- "smallest elicited probability must be < 0.4; largest must be > 0.6\n
       (Exclude probabilities equalling 0 or 1)."
     }
-    
+
   }
   }
- list(valid = valid, error = error)   
-  
+ list(valid = valid, error = error)
+
 }
