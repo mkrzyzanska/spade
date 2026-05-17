@@ -1592,11 +1592,20 @@ observe({
     )
 
     output$download_rds <- downloadHandler(
+
         filename = function() {
+
+          inputs <- c(input$USI, input$ULI, input$UFI, input$Expert, input$Date)
+          valid_inputs <- inputs[!is.na(inputs) & inputs != "" & !is.null(inputs)]
+          name <- if (length(valid_inputs) > 0) {
+            paste(valid_inputs, collapse = "_")
+          } else {
+            paste0("elicited_date_",Sys.Date())
+          }
         switch(input$exportFormat,
-               r_file = paste0("my_object_", Sys.Date(), ".rds"),
-              json_file = paste0("my_object_", Sys.Date(), ".json"),
-              csv_file = paste0("my_object_", Sys.Date(), ".csv"))
+               r_file = paste0(name, ".rds"),
+              json_file = paste0(name, ".json"),
+              csv_file = paste0(name, ".csv"))
     },
 
     content = function(file) {
@@ -1660,6 +1669,7 @@ observe({
         ULI = input$ULI,
         USI = input$USI,
         PoE = input$PoE,
+        notes = input$user_notes,
         startDate=startDate(),
         endDate=endDate(),
         nBins=ifelse(input$customiseGraph && !is.null(input$nBins),input$nBins,nBins()),
@@ -1692,10 +1702,18 @@ observe({
 
     # Download R Markdown report
     output$report <- downloadHandler(
-      filename = function(){switch(input$outFormat,
-                                   pdf_document = "distributions-report.pdf",
-                                   html_document = "distributions-report.html",
-                                   word_document = "distributions-report.docx")},
+      filename = function(){
+        inputs <- c(input$USI, input$ULI, input$UFI, input$Expert, input$Date)
+        valid_inputs <- inputs[!is.na(inputs) & inputs != "" & !is.null(inputs)]
+        name <- if (length(valid_inputs) > 0) {
+          paste(valid_inputs, collapse = "_")
+        } else {
+          paste0("elicited_date_",Sys.Date())
+        }
+        switch(input$outFormat,
+                                   pdf_document = paste0(name,".pdf"),
+                                   html_document = paste0(name,".html"),
+                                   word_document = paste0(name,".docx"))},
       content = function(file) {
         # Copy the report file to a temporary directory before processing it, in
         # case we don't have write permissions to the current working dir (which
