@@ -403,6 +403,10 @@ for (i in seq_along(x_bins[-length(x_bins)])) {
 }
 ##########################################################################
 
+  print(min(x))
+  print(rectangles$xmin)
+  print(startDate)
+
 
 	df1 <- data.frame(x = x, fx = fx)
 	p1 <- ggplot(df1, aes(x = x, y = fx)) +
@@ -451,13 +455,24 @@ xticks<-seq(startDate,endDate, length.out=nBins+1)
        # startDate=startDate+1
        # nBins=nBins-1
          x_lab= "YEAR"
+         axis_span <- max(xticks) - min(xticks)
+         dynamic_offset <- axis_span * 0.02
+         y_pos <- (0.95 / (sum(chips) * width)) * (sum(chips) + 1) / 2
         p1 <- p1 +
         geom_vline(xintercept = 1, linetype = "dashed", color = "red", size = 0.5) +  # Vertical line
+
+          # Use the dynamic offset to position BCE to the left of x = 1
+          annotate("text", x = 1 - dynamic_offset, y = y_pos,
+                   label = "BCE", color = "red", size = 4, hjust = 1) +
+
+          # Use the dynamic offset to position CE to the right of x = 1
+          annotate("text", x = 1 + dynamic_offset, y = y_pos,
+                   label = "CE", color = "red", size = 4, hjust = 0)
        #  Annotate BCE (left side of x = 1)
-              annotate("text", x = 1 - 100, y = (0.95/(sum(chips)*width))*(sum(chips)+1) / 2, label = "BCE", color = "red", size = 4, hjust = 1) +
+     #         annotate("text", x = 1 - 100, y = (0.95/(sum(chips)*width))*(sum(chips)+1) / 2, label = "BCE", color = "red", size = 4, hjust = 1) +
 
               # Annotate CE (right side of x = 1)
-              annotate("text", x = 1 + 100, y = (0.95/(sum(chips)*width))*(sum(chips)+1) / 2, label = "CE", color = "red", size = 4, hjust = 0)
+      #        annotate("text", x = 1 + 100, y = (0.95/(sum(chips)*width))*(sum(chips)+1) / 2, label = "CE", color = "red", size = 4, hjust = 0)
      }
 
 ######### Plotting, regardless i

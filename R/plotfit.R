@@ -336,7 +336,8 @@ plotfit <- function(fit,
 
 
   if(nrow(fit$vals)==1){
-
+      print(xl)
+      print(startDate)
       p1 <- suppressWarnings(makeSingleExpertPlot(fit, d, xl,
                                                   xu, ql, qu, sf, ex = 1,
                                                   lwd, xlab, ylab,

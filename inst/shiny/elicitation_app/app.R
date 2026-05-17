@@ -1118,10 +1118,13 @@ observe({
 
        dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best","NS","MP")
 
+
+        print(paste("std:",startDate()))
         if(input$selectDistribution){
         suppressWarnings(plotfit(myfit(), d = input$dist,
                                   ql = fq()[1], qu = fq()[2],
-                                 xl = xlimPDF()[1], xu = xlimPDF()[2],
+                                 xl = startDate(), xu = endDate(),
+                                 # xl = xlimPDF()[1], xu = xlimPDF()[2],
                                  fs = input$fs,
                                  xlab = input$xLabel,
                                  startDate=startDate(),
@@ -1132,7 +1135,8 @@ observe({
             }else{
             suppressWarnings(plotfit(myfit(), d = "best",
                                   ql = 0.1, qu = 0.9,
-                                 xl = xlimPDF()[1], xu = xlimPDF()[2],
+                                  xl = startDate(), xu = endDate(),
+                                 #xl = xlimPDF()[1], xu = xlimPDF()[2],
                                  fs = input$fs,
                                  xlab = input$xLabel,
                                  startDate=startDate(),
