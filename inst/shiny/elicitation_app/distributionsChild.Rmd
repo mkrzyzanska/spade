@@ -21,12 +21,12 @@ for (i in 1:length(bin.left)) {
   
   # Determine the suffix based on the sign of left_val and right_val
   if (left_val < 0 && right_val < 0) {
-     bins[i] <- paste0(abs(left_val), " - ", abs(right_val), " BCE")
+     bins[i] <- paste0(abs(round(left_val)), " - ", abs(round(right_val)), " BCE")
   } else if (left_val > 0 && right_val > 0) {
-    bins[i] <- paste0(abs(left_val), " - ", abs(right_val), " BCE")
+    bins[i] <- paste0(abs(round(left_val)), " - ", abs(round(right_val)), " BCE")
   } else {
     # Mixed case: one negative, one positive
-    bins[i] <- paste0(abs(left_val), " BCE"," - ", abs(right_val), " CE")
+    bins[i] <- paste0(abs(round(left_val)), " BCE"," - ", abs(round(right_val)), " CE")
   }
 }
 

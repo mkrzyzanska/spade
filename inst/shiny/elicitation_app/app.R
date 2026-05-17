@@ -25,15 +25,15 @@ endDate<-1950
               style = "font-size: 1.1em; cursor: pointer;margin-bottom: 20px;",
               tags$strong("Metadata (click here to collapse / expand)\n")
             ),
-          textInput("Date", label = "Date", value = format(Sys.time(), '%d %B %Y')),
+          textInput("Date", label = "Date of Elicitation", value = format(Sys.time(), '%d-%m-%Y')),
           textInput("Expert", label = "Expert", value = ""),
           textInput("Facilitator", label = "Facilitator", value = ""),
-          textInput("FindType", label = "Find Type", value = ""),
-          textInput("EoI", label = "Event of Interest", value = ""),
+          textInput("FindType", label = "Find Type (e.g. coin, pottery sherd)", value = ""),
+          textInput("EoI", label = "Event of Interest (e.g. production, deposition)", value = ""),
           textInput("UFI", label = "Unique Find Identifier", value = ""),
           textInput("ULI", label = "Unique Location Identifier", value = ""),
           textInput("USI", label = "Unique Site Identifier", value = ""),
-          textInput("PoE", label = "Portofolio of Evidence", value = "")
+          textInput("PoE", label = "Portofolio of Evidence Location (e.g. DOI, link, reference, owner)", value = "")
         )),
         wellPanel(
           tags$details(
@@ -84,7 +84,7 @@ endDate<-1950
                 textInput("QoI", label = "Quantity of Interest (fill in the metadata to generate automatically)", value = "")
                   ),
                 column(4,
-                       fileInput("load_rds", "Import date", accept = ".rds")
+                       fileInput("load_rds", "Import date", accept = c(".rds",".json",".csv"))
                 )
                 ),
                 fluidRow(
@@ -208,7 +208,7 @@ endDate<-1950
                            column(4,
                                   selectInput("dist", label = "Distribution",
                                        choices =  list('Best fitting' = "best",
-                                                       Histogram = "hist",
+                                                       #Histogram = "hist",
                                                        Normal = "normal",
                                                        'Student-t' = "t",
                                                        'Skew normal' = "skewnormal",
@@ -218,9 +218,10 @@ endDate<-1950
                                                        Beta = "beta",
                                                        'Mirror gamma' = "mirrorgamma",
                                                        'Mirror log normal' = "mirrorlognormal",
-                                                       'Mirror log Student-t' = "mirrorlogt",
-                                                       'Natural Cubic Spline' = "NS",
-                                                       'Monotonic P-spline' = "MP")
+                                                       'Mirror log Student-t' = "mirrorlogt"#,
+                                                       #'Natural Cubic Spline' = "NS",
+                                                       #'Monotonic P-spline' = "MP"
+                                                       )
                           ) ),
 
                            conditionalPanel(
@@ -259,7 +260,7 @@ endDate<-1950
                                     downloadButton('downloadDensities',
                                                    "Download plot")),
                              conditionalPanel(
-                               condition="true",
+                               condition="false",
                                column(4,
                                       uiOutput("setPDFxaxisLimits")
                                )
@@ -287,10 +288,10 @@ endDate<-1950
                          #)
                          ),
 
-                tabPanel("Help",
-                         includeHTML(system.file("shinyAppFiles", "help.html",
-                                                 package="SHELF"))
-                         ),
+                #tabPanel("Help",
+                #         includeHTML(system.file("shinyAppFiles", "help.html",
+                #                                 package="SHELF"))
+                #         ),
                 selected = "tokens"
               )
       )
@@ -311,8 +312,25 @@ endDate<-1950
       is_loading(TRUE)
 
       path <- input$load_rds$datapath
-      dat  <- readRDS(path)
 
+      # 1. Assign data based on file extension
+      dat <- if (grepl("\\.json$", path, ignore.case = TRUE)) {
+        jsonlite::fromJSON(path)
+      } else if (grepl("\\.rds$", path, ignore.case = TRUE)) {
+        readRDS(path)
+      } else{
+        NULL
+      }
+
+      if(is.null(dat)){
+        csv_file<-read.csv(path,row.names=1)
+        csv_file<-as.list(as.data.frame(t(csv_file)))
+        csv_file$chips<-as.numeric(unlist(strsplit(csv_file$chips, ",")))
+        csv_file$startDate<- as.numeric(csv_file$startDate)
+        csv_file$endDate<- as.numeric(csv_file$endDate)
+        dat<-csv_file
+      }
+      #dat  <- readRDS(path)
 
       # --- basic validation ---
       validate(
@@ -337,14 +355,14 @@ endDate<-1950
       #}
 
       # --- restore metadata inputs ---
-      updateTextInput(session, "Expert",      value = dat$metadata$expert      %||% "")
-      updateTextInput(session, "Facilitator", value = dat$metadata$facilitator %||% "")
-      updateTextInput(session, "FindType",    value = dat$metadata$findtype    %||% "")
-      updateTextInput(session, "EoI",         value = dat$metadata$EoI         %||% "")
-      updateTextInput(session, "UFI",         value = dat$metadata$UFI         %||% "")
-      updateTextInput(session, "ULI",         value = dat$metadata$ULI         %||% "")
-      updateTextInput(session, "USI",         value = dat$metadata$USI         %||% "")
-      updateTextInput(session, "PoE",         value = dat$metadata$PoE         %||% "")
+      updateTextInput(session, "Expert",      value = dat$expert      %||% "")
+      updateTextInput(session, "Facilitator", value = dat$facilitator %||% "")
+      updateTextInput(session, "FindType",    value = dat$findtype    %||% "")
+      updateTextInput(session, "EoI",         value = dat$EoI         %||% "")
+      updateTextInput(session, "UFI",         value = dat$UFI         %||% "")
+      updateTextInput(session, "ULI",         value = dat$ULI         %||% "")
+      updateTextInput(session, "USI",         value = dat$USI         %||% "")
+      updateTextInput(session, "PoE",         value = dat$PoE         %||% "")
       updateTextAreaInput(session, "user_notes", value = dat$notes %||% "")
 
         if (!is.null(dat$startDate)){
@@ -1110,7 +1128,7 @@ observe({
 
     plotPDF <- function(){
       a<-myfit()
-     req(myfit(), xlimPDF(), fq(), input$fs,gridHeight(),input$tabs)#,quantileValues())
+     req(myfit(), fq(), input$fs,gridHeight(),input$tabs)#,quantileValues())
       if(input$tabs == "PDF"){
         print(paste("RL_chips",rl$chips))
         #if(!is.table(myfit())){
@@ -1583,29 +1601,33 @@ observe({
 
     content = function(file) {
 
+      fit <- myfit()
+      distr <- ifelse(input$dist=="best",fit$best.fitting$best.fit,input$dist)
+      dist_params <- fit[[which(colnames(fit$ssq)==distr)]]
+
+      param_string<-paste(paste(paste('"',colnames(dist_params),'"',sep=""),paste('"',dist_params,'"',sep=""),sep=":"),collapse=",\n")
+
       if(grepl(".rds",file)==TRUE){
 
 
-      elicited_date <- list(metadata=list(
-                                  date = input$Date,
-                                  expert = input$Expert,
-                                  facilitator = input$Facilitator,
-                                  findtype= input$FindType,
-                                  EoI= input$EoI,
-                                  UFI = input$UFI,
-                                  ULI = input$ULI,
-                                  USI = input$USI,
-                                  PoE = input$PoE),
-
-                        startDate=startDate(),
-                        endDate=endDate(),
-                        nBins=ifelse(input$customiseGraph && !is.null(input$nBins),input$nBins,nBins()),
-                        customisedBins=input$customiseGraph,
-                          chips = rl$chips,
-                          selected_distribution=input$dist,
-                          notes = input$user_notes,
-                          fit = myfit()
+      elicited_date <- list(date = input$Date,
+                            expert = input$Expert,
+                            facilitator = input$Facilitator,
+                            findtype= input$FindType,
+                            EoI= input$EoI,
+                            UFI = input$UFI,
+                            ULI = input$ULI,
+                            USI = input$USI,
+                            PoE = input$PoE,
+                            startDate=startDate(),
+                            endDate=endDate(),
+                            nBins=ifelse(input$customiseGraph && !is.null(input$nBins),input$nBins,nBins()),
+                           customisedBins=input$customiseGraph,
+                           chips = rl$chips,
+                           selected_distribution=distr,
+                           notes = input$user_notes
       )
+      elicited_date<-c(elicited_date,dist_params)
       saveRDS(elicited_date, file)
       }else if(grepl(".json",file)==TRUE){
         writeLines(paste0('{"date":"', input$Date,
@@ -1617,15 +1639,37 @@ observe({
                           '",\n"ULI":"', input$ULI,
                           '",\n"USI":"', input$USI,
                           '",\n"PoE":"', input$PoE,
+                          '",\n"startDate":', startDate(),
+                          ',\n"endDate":', endDate(),
+                          ',\n"nBins":', ifelse(input$customiseGraph && !is.null(input$nBins),input$nBins,nBins()),
+                          ',\n"chips":[', paste(rl$chips,collapse=","),
+                          '],\n"selected_distribution":"', distr,
                           '",\n"notes":"', input$user_notes,
-                          '",\n"startDate":"', startDate(),
-                          '",\n"endDate":"', endDate(),
-                          '",\n"nBins":"', ifelse(input$customiseGraph && !is.null(input$nBins),input$nBins,nBins()),
-                          '",\n"chips":[', paste(rl$chips,collapse=","),
-                          '],\n"selected_distribution":"', input$dist,
-                          '"}'
+                          '",\n',param_string,
+                          '}'
                           )
           ,file)
+
+      }else if(grepl(".csv",file)==TRUE){
+        df<-data.frame(date = input$Date,
+        expert = input$Expert,
+        facilitator = input$Facilitator,
+        findtype= input$FindType,
+        EoI= input$EoI,
+        UFI = input$UFI,
+        ULI = input$ULI,
+        USI = input$USI,
+        PoE = input$PoE,
+        startDate=startDate(),
+        endDate=endDate(),
+        nBins=ifelse(input$customiseGraph && !is.null(input$nBins),input$nBins,nBins()),
+        customisedBins=input$customiseGraph,
+        chips = paste(rl$chips,collapse=","),
+        selected_distribution=distr)
+        df<-as.data.frame(t(cbind(df,dist_params)))
+        colnames(df)<-c("elicited_date")
+        print(df)
+        write.csv(df,file)
 
       }
       }

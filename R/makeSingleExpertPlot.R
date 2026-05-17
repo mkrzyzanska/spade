@@ -403,9 +403,6 @@ for (i in seq_along(x_bins[-length(x_bins)])) {
 }
 ##########################################################################
 
-  print(min(x))
-  print(rectangles$xmin)
-  print(startDate)
 
 
 	df1 <- data.frame(x = x, fx = fx)
