@@ -410,6 +410,9 @@ endDate<-1950
           x[is.na(x)] <- 0
 
           rl$chips <- x
+          rl$allBinsPr <- cumsum(x)/sum(x)
+          rl$nonEmpty <- cumsum(x)/sum(x) > 0 & cumsum(x)/sum(x) < 1
+
           print("rl updated")
           #if(trigger_pause==TRUE){
             pause(TRUE)
@@ -851,7 +854,6 @@ endDate<-1950
 
     # Elicited probabilities and values ----
     p <- reactive({
-
       myp <- rl$allBinsPr[rl$nonEmpty]
       myp
     })
@@ -1051,6 +1053,7 @@ observe({
 
     })
 
+
     # Reset chip allocation if number of bins or limits change
    # observeEvent(input$nBins,{
    #   req(input$nBins)
@@ -1109,7 +1112,7 @@ observe({
       a<-myfit()
      req(myfit(), xlimPDF(), fq(), input$fs,gridHeight(),input$tabs)#,quantileValues())
       if(input$tabs == "PDF"){
-
+        print(paste("RL_chips",rl$chips))
         #if(!is.table(myfit())){
         #}else{
 
@@ -1596,20 +1599,27 @@ observe({
                         customisedBins=input$customiseGraph,
                           chips = rl$chips,
                           selected_distribution=input$dist,
-                          notes = input$user_notes
+                          notes = input$user_notes,
+                          fit = myfit()
       )
       saveRDS(elicited_date, file)
       }else if(grepl(".json",file)==TRUE){
         writeLines(paste0('{"date":"', input$Date,
-                          '","expert":"', input$Expert,
-                         # '","facilitator":"', input$Facilitator,
-                        #  '","findtype":"', input$FindType,
-                        #  '","EoI":"', input$EoI,
-                        #  '","UFI":"', input$UFI,
-                        #  '","ULI":"', input$ULI,
-                        #  '","USI":"', input$USI,
-                        #  '","PoE":"', input$PoE,
-                        #  '}"'
+                          '",\n"expert":"', input$Expert,
+                          '",\n"facilitator":"', input$Facilitator,
+                          '",\n"findtype":"', input$FindType,
+                          '",\n"EoI":"', input$EoI,
+                          '",\n"UFI":"', input$UFI,
+                          '",\n"ULI":"', input$ULI,
+                          '",\n"USI":"', input$USI,
+                          '",\n"PoE":"', input$PoE,
+                          '",\n"notes":"', input$user_notes,
+                          '",\n"startDate":"', startDate(),
+                          '",\n"endDate":"', endDate(),
+                          '",\n"nBins":"', ifelse(input$customiseGraph && !is.null(input$nBins),input$nBins,nBins()),
+                          '",\n"chips":[', paste(rl$chips,collapse=","),
+                          '],\n"selected_distribution":"', input$dist,
+                          '"}'
                           )
           ,file)
 
