@@ -17,5 +17,7 @@ Imports:
     shiny,
     shinyjs,
     splines2,
-    scam
+    scam,
+    ggplot2,
+    jsonlite
 VignetteBuilder: knitr

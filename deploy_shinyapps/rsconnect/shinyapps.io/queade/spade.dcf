@@ -5,6 +5,6 @@ account: queade
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 16449011
-bundleId:
+bundleId: 11457925
 url: https://queade.shinyapps.io/spade/
 version: 1

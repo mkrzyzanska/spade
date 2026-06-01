@@ -9,6 +9,28 @@
     ]
   },
   "Packages": {
+    "PKI": {
+      "Package": "PKI",
+      "Version": "0.1-15",
+      "Source": "Repository",
+      "Title": "Public Key Infrastucture for R Based on the X.509 Standard",
+      "Authors@R": "person(\"Simon\", \"Urbanek\", role=c(\"aut\",\"cre\",\"cph\"), email=\"Simon.Urbanek@r-project.org\", comment=c(\"https://urbanek.nz\", ORCID=\"0000-0003-2297-1732\"))",
+      "Maintainer": "Simon Urbanek <Simon.Urbanek@r-project.org>",
+      "Depends": [
+        "R (>= 2.9.0)",
+        "base64enc"
+      ],
+      "Enhances": [
+        "gmp"
+      ],
+      "Description": "Public Key Infrastucture functions such as verifying certificates, RSA encription and signing which can be used to build PKI infrastructure and perform cryptographic tasks.",
+      "License": "GPL-2 | GPL-3 | file LICENSE",
+      "URL": "http://www.rforge.net/PKI",
+      "SystemRequirements": "OpenSSL library and headers (openssl-dev or similar)",
+      "NeedsCompilation": "yes",
+      "Author": "Simon Urbanek [aut, cre, cph] (https://urbanek.nz, ORCID: <https://orcid.org/0000-0003-2297-1732>)",
+      "Repository": "CRAN"
+    },
     "R6": {
       "Package": "R6",
       "Version": "2.6.1",
@@ -62,6 +84,99 @@
       "NeedsCompilation": "yes",
       "Author": "Dirk Eddelbuettel [aut, cre] (ORCID: <https://orcid.org/0000-0001-6419-907X>), Romain Francois [aut] (ORCID: <https://orcid.org/0000-0002-2444-4226>), JJ Allaire [aut] (ORCID: <https://orcid.org/0000-0003-0174-9868>), Kevin Ushey [aut] (ORCID: <https://orcid.org/0000-0003-2880-7407>), Qiang Kou [aut] (ORCID: <https://orcid.org/0000-0001-6786-5453>), Nathan Russell [aut], Iñaki Ucar [aut] (ORCID: <https://orcid.org/0000-0001-6403-5550>), Doug Bates [aut] (ORCID: <https://orcid.org/0000-0001-8316-9503>), John Chambers [aut]",
       "Maintainer": "Dirk Eddelbuettel <edd@debian.org>",
+      "Repository": "CRAN"
+    },
+    "RcppArmadillo": {
+      "Package": "RcppArmadillo",
+      "Version": "15.2.3-1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "'Rcpp' Integration for the 'Armadillo' Templated Linear Algebra Library",
+      "Date": "2025-12-16",
+      "Authors@R": "c(person(\"Dirk\", \"Eddelbuettel\", role = c(\"aut\", \"cre\"), email = \"edd@debian.org\", comment = c(ORCID = \"0000-0001-6419-907X\")), person(\"Romain\", \"Francois\", role = \"aut\", comment = c(ORCID = \"0000-0002-2444-4226\")), person(\"Doug\", \"Bates\", role = \"aut\", comment = c(ORCID = \"0000-0001-8316-9503\")), person(\"Binxiang\", \"Ni\", role = \"aut\"), person(\"Conrad\", \"Sanderson\", role = \"aut\", comment = c(ORCID = \"0000-0002-0049-4501\")))",
+      "Description": "'Armadillo' is a templated C++ linear algebra library aiming towards a good balance between speed and ease of use. It provides high-level syntax and functionality deliberately similar to Matlab. It is useful for algorithm development directly in C++, or quick conversion of research code into production environments. It provides efficient classes for vectors, matrices and cubes where dense and sparse matrices are supported. Integer, floating point and complex numbers are supported. A sophisticated expression evaluator (based on template meta-programming) automatically combines several operations to increase speed and efficiency. Dynamic evaluation automatically chooses optimal code paths based on detected matrix structures. Matrix decompositions are provided through integration with LAPACK, or one of its high performance drop-in replacements (such as 'MKL' or 'OpenBLAS'). It can automatically use 'OpenMP' multi-threading (parallelisation) to speed up computationally expensive operations. . The 'RcppArmadillo' package includes the header files from the 'Armadillo' library; users do not need to install 'Armadillo' itself in order to use 'RcppArmadillo'. Starting from release 15.0.0, the minimum compilation standard is C++14 so 'Armadillo' version 14.6.3 is included as a fallback when an R package forces the C++11 standard. Package authors should set a '#define' to select the 'current' version, or select the 'legacy' version (also chosen as default) if they must. See 'GitHub issue #475' for details. . Since release 7.800.0, 'Armadillo' is licensed under Apache License 2; previous releases were under licensed as MPL 2.0 from version 3.800.0 onwards and LGPL-3 prior to that; 'RcppArmadillo' (the 'Rcpp' bindings/bridge to Armadillo) is licensed under the GNU GPL version 2 or later, as is the rest of 'Rcpp'.",
+      "License": "GPL (>= 2)",
+      "LazyLoad": "yes",
+      "Depends": [
+        "R (>= 3.3.0)"
+      ],
+      "LinkingTo": [
+        "Rcpp"
+      ],
+      "Imports": [
+        "Rcpp (>= 1.0.12)",
+        "stats",
+        "utils",
+        "methods"
+      ],
+      "Suggests": [
+        "tinytest",
+        "Matrix (>= 1.3.0)",
+        "pkgKitten",
+        "reticulate",
+        "slam"
+      ],
+      "URL": "https://github.com/RcppCore/RcppArmadillo, https://dirk.eddelbuettel.com/code/rcpp.armadillo.html",
+      "BugReports": "https://github.com/RcppCore/RcppArmadillo/issues",
+      "RoxygenNote": "6.0.1",
+      "NeedsCompilation": "yes",
+      "Author": "Dirk Eddelbuettel [aut, cre] (ORCID: <https://orcid.org/0000-0001-6419-907X>), Romain Francois [aut] (ORCID: <https://orcid.org/0000-0002-2444-4226>), Doug Bates [aut] (ORCID: <https://orcid.org/0000-0001-8316-9503>), Binxiang Ni [aut], Conrad Sanderson [aut] (ORCID: <https://orcid.org/0000-0002-0049-4501>)",
+      "Maintainer": "Dirk Eddelbuettel <edd@debian.org>",
+      "Repository": "CRAN"
+    },
+    "RcppTOML": {
+      "Package": "RcppTOML",
+      "Version": "0.2.3",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "'Rcpp' Bindings to Parser for \"Tom's Obvious Markup Language\"",
+      "Date": "2025-03-08",
+      "Authors@R": "c(person(\"Dirk\", \"Eddelbuettel\", role = c(\"aut\", \"cre\"), email = \"edd@debian.org\", comment = c(ORCID = \"0000-0001-6419-907X\")), person(\"Mark\", \"Gillard\", role = \"aut\", comment = \"Author of 'toml++' header library\"))",
+      "Description": "The configuration format defined by 'TOML' (which expands to \"Tom's Obvious Markup Language\") specifies an excellent format (described at <https://toml.io/en/>) suitable for both human editing as well as the common uses of a machine-readable format. This package uses 'Rcpp' to connect to the 'toml++' parser written by Mark Gillard to R.",
+      "SystemRequirements": "A C++17 compiler",
+      "BugReports": "https://github.com/eddelbuettel/rcpptoml/issues",
+      "URL": "http://dirk.eddelbuettel.com/code/rcpp.toml.html",
+      "Imports": [
+        "Rcpp (>= 1.0.8)"
+      ],
+      "Depends": [
+        "R (>= 3.3.0)"
+      ],
+      "LinkingTo": [
+        "Rcpp"
+      ],
+      "Suggests": [
+        "tinytest"
+      ],
+      "License": "GPL (>= 2)",
+      "NeedsCompilation": "yes",
+      "Author": "Dirk Eddelbuettel [aut, cre] (<https://orcid.org/0000-0001-6419-907X>), Mark Gillard [aut] (Author of 'toml++' header library)",
+      "Maintainer": "Dirk Eddelbuettel <edd@debian.org>",
+      "Repository": "CRAN"
+    },
+    "askpass": {
+      "Package": "askpass",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Password Entry Utilities for R, Git, and SSH",
+      "Authors@R": "person(\"Jeroen\", \"Ooms\", role = c(\"aut\", \"cre\"),  email = \"jeroenooms@gmail.com\", comment = c(ORCID = \"0000-0002-4035-0289\"))",
+      "Description": "Cross-platform utilities for prompting the user for credentials or a  passphrase, for example to authenticate with a server or read a protected key. Includes native programs for MacOS and Windows, hence no 'tcltk' is required.  Password entry can be invoked in two different ways: directly from R via the  askpass() function, or indirectly as password-entry back-end for 'ssh-agent'  or 'git-credential' via the SSH_ASKPASS and GIT_ASKPASS environment variables. Thereby the user can be prompted for credentials or a passphrase if needed  when R calls out to git or ssh.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://r-lib.r-universe.dev/askpass",
+      "BugReports": "https://github.com/r-lib/askpass/issues",
+      "Encoding": "UTF-8",
+      "Imports": [
+        "sys (>= 2.1)"
+      ],
+      "RoxygenNote": "7.2.3",
+      "Suggests": [
+        "testthat"
+      ],
+      "Language": "en-US",
+      "NeedsCompilation": "yes",
+      "Author": "Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>)",
+      "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
       "Repository": "CRAN"
     },
     "base64enc": {
@@ -236,6 +351,40 @@
       "Encoding": "UTF-8",
       "NeedsCompilation": "yes",
       "Author": "Jeroen Ooms [aut, cre] (ORCID: <https://orcid.org/0000-0002-4035-0289>), John MacFarlane [cph] (Author of cmark)",
+      "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "curl": {
+      "Package": "curl",
+      "Version": "7.0.0",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "A Modern and Flexible Web Client for R",
+      "Authors@R": "c( person(\"Jeroen\", \"Ooms\", role = c(\"aut\", \"cre\"), email = \"jeroenooms@gmail.com\", comment = c(ORCID = \"0000-0002-4035-0289\")), person(\"Hadley\", \"Wickham\", role = \"ctb\"), person(\"Posit Software, PBC\", role = \"cph\"))",
+      "Description": "Bindings to 'libcurl' <https://curl.se/libcurl/> for performing fully configurable HTTP/FTP requests where responses can be processed in memory, on disk, or streaming via the callback or connection interfaces. Some knowledge of 'libcurl' is recommended; for a more-user-friendly web client see the  'httr2' package which builds on this package with http specific tools and logic.",
+      "License": "MIT + file LICENSE",
+      "SystemRequirements": "libcurl (>= 7.73): libcurl-devel (rpm) or libcurl4-openssl-dev (deb)",
+      "URL": "https://jeroen.r-universe.dev/curl",
+      "BugReports": "https://github.com/jeroen/curl/issues",
+      "Suggests": [
+        "spelling",
+        "testthat (>= 1.0.0)",
+        "knitr",
+        "jsonlite",
+        "later",
+        "rmarkdown",
+        "httpuv (>= 1.4.4)",
+        "webutils"
+      ],
+      "VignetteBuilder": "knitr",
+      "Depends": [
+        "R (>= 3.0.0)"
+      ],
+      "RoxygenNote": "7.3.2",
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "NeedsCompilation": "yes",
+      "Author": "Jeroen Ooms [aut, cre] (ORCID: <https://orcid.org/0000-0002-4035-0289>), Hadley Wickham [ctb], Posit Software, PBC [cph]",
       "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
       "Repository": "CRAN"
     },
@@ -490,6 +639,38 @@
       "Maintainer": "Winston Chang <winston@posit.co>",
       "Repository": "CRAN"
     },
+    "jose": {
+      "Package": "jose",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "JavaScript Object Signing and Encryption",
+      "Authors@R": "person(\"Jeroen\", \"Ooms\", role = c(\"aut\", \"cre\"),  email = \"jeroenooms@gmail.com\", comment = c(ORCID = \"0000-0002-4035-0289\"))",
+      "Description": "Read and write JSON Web Keys (JWK, rfc7517), generate and verify JSON Web Signatures (JWS, rfc7515) and encode/decode JSON Web Tokens (JWT, rfc7519) <https://datatracker.ietf.org/wg/jose/documents/>. These standards provide  modern signing and encryption formats that are natively supported by browsers via the JavaScript WebCryptoAPI <https://www.w3.org/TR/WebCryptoAPI/#jose>,  and used by services like OAuth 2.0, LetsEncrypt, and Github Apps.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://r-lib.r-universe.dev/jose",
+      "BugReports": "https://github.com/r-lib/jose/issues",
+      "Depends": [
+        "openssl (>= 1.2.1)"
+      ],
+      "Imports": [
+        "jsonlite"
+      ],
+      "RoxygenNote": "7.1.2",
+      "VignetteBuilder": "knitr",
+      "Suggests": [
+        "spelling",
+        "testthat",
+        "knitr",
+        "rmarkdown"
+      ],
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "NeedsCompilation": "no",
+      "Author": "Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>)",
+      "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
+      "Repository": "CRAN"
+    },
     "jquerylib": {
       "Package": "jquerylib",
       "Version": "0.1.4",
@@ -700,6 +881,39 @@
       "Maintainer": "Yihui Xie <xie@yihui.name>",
       "Repository": "CRAN"
     },
+    "openssl": {
+      "Package": "openssl",
+      "Version": "2.3.4",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Toolkit for Encryption, Signatures and Certificates Based on OpenSSL",
+      "Authors@R": "c(person(\"Jeroen\", \"Ooms\", role = c(\"aut\", \"cre\"), email = \"jeroenooms@gmail.com\", comment = c(ORCID = \"0000-0002-4035-0289\")), person(\"Oliver\", \"Keyes\", role = \"ctb\"))",
+      "Description": "Bindings to OpenSSL libssl and libcrypto, plus custom SSH key parsers. Supports RSA, DSA and EC curves P-256, P-384, P-521, and curve25519. Cryptographic signatures can either be created and verified manually or via x509 certificates.  AES can be used in cbc, ctr or gcm mode for symmetric encryption; RSA for asymmetric (public key) encryption or EC for Diffie Hellman. High-level envelope functions  combine RSA and AES for encrypting arbitrary sized data. Other utilities include key generators, hash functions (md5, sha1, sha256, etc), base64 encoder, a secure random number generator, and 'bignum' math methods for manually performing crypto  calculations on large multibyte integers.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://jeroen.r-universe.dev/openssl",
+      "BugReports": "https://github.com/jeroen/openssl/issues",
+      "SystemRequirements": "OpenSSL >= 1.0.2",
+      "VignetteBuilder": "knitr",
+      "Imports": [
+        "askpass"
+      ],
+      "Suggests": [
+        "curl",
+        "testthat (>= 2.1.0)",
+        "digest",
+        "knitr",
+        "rmarkdown",
+        "jsonlite",
+        "jose",
+        "sodium"
+      ],
+      "RoxygenNote": "7.3.2",
+      "Encoding": "UTF-8",
+      "NeedsCompilation": "yes",
+      "Author": "Jeroen Ooms [aut, cre] (ORCID: <https://orcid.org/0000-0002-4035-0289>), Oliver Keyes [ctb]",
+      "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
+      "Repository": "CRAN"
+    },
     "otel": {
       "Package": "otel",
       "Version": "0.2.0",
@@ -734,6 +948,42 @@
       "NeedsCompilation": "no",
       "Author": "Gábor Csárdi [aut, cre]",
       "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "packrat": {
+      "Package": "packrat",
+      "Version": "0.9.3",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "A Dependency Management System for Projects and their R Package Dependencies",
+      "Authors@R": "c( person(\"Aron\", \"Atkins\", , \"aron@posit.co\", role = c(\"aut\", \"cre\")), person(\"Toph\", \"Allen\", role = \"aut\"), person(\"Kevin\", \"Ushey\", role = \"aut\"), person(\"Jonathan\", \"McPherson\", role = \"aut\"), person(\"Joe\", \"Cheng\", role = \"aut\"), person(\"JJ\", \"Allaire\", role = \"aut\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "Manage the R packages your project depends on in an isolated, portable, and reproducible way.",
+      "License": "GPL-2",
+      "URL": "https://github.com/rstudio/packrat",
+      "BugReports": "https://github.com/rstudio/packrat/issues",
+      "Depends": [
+        "R (>= 3.0.0)"
+      ],
+      "Imports": [
+        "tools",
+        "utils"
+      ],
+      "Suggests": [
+        "devtools",
+        "httr",
+        "knitr",
+        "mockery",
+        "rmarkdown",
+        "testthat (>= 3.0.0)",
+        "webfakes",
+        "withr"
+      ],
+      "Config/testthat/edition": "3",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "NeedsCompilation": "no",
+      "Author": "Aron Atkins [aut, cre], Toph Allen [aut], Kevin Ushey [aut], Jonathan McPherson [aut], Joe Cheng [aut], JJ Allaire [aut], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Aron Atkins <aron@posit.co>",
       "Repository": "CRAN"
     },
     "promises": {
@@ -814,7 +1064,7 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.1.6",
+      "Version": "1.2.3",
       "Source": "Repository",
       "Type": "Package",
       "Title": "Project Environments",
@@ -918,6 +1168,93 @@
       "Maintainer": "Lionel Henry <lionel@posit.co>",
       "Repository": "CRAN"
     },
+    "rsconnect": {
+      "Package": "rsconnect",
+      "Version": "1.7.0",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Deploy Docs, Apps, and APIs to 'Posit Connect', 'shinyapps.io', and 'RPubs'",
+      "Authors@R": "c( person(\"Aron\", \"Atkins\", , \"aron@posit.co\", role = c(\"aut\", \"cre\")), person(\"Toph\", \"Allen\", role = \"aut\"), person(\"Hadley\", \"Wickham\", role = \"aut\"), person(\"Jonathan\", \"McPherson\", role = \"aut\"), person(\"JJ\", \"Allaire\", role = \"aut\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "Programmatic deployment interface for 'RPubs', 'shinyapps.io', and 'Posit Connect'. Supported content types include R Markdown documents, Shiny applications, Plumber APIs, plots, and static web content.",
+      "License": "GPL-2",
+      "URL": "https://rstudio.github.io/rsconnect/, https://github.com/rstudio/rsconnect",
+      "BugReports": "https://github.com/rstudio/rsconnect/issues",
+      "Depends": [
+        "R (>= 3.5.0)"
+      ],
+      "Imports": [
+        "cli",
+        "curl",
+        "digest",
+        "jsonlite",
+        "lifecycle",
+        "openssl (>= 2.0.0)",
+        "PKI",
+        "packrat (>= 0.6)",
+        "renv (>= 1.0.0)",
+        "rlang (>= 1.0.0)",
+        "rstudioapi (>= 0.5)",
+        "snowflakeauth",
+        "tools",
+        "yaml (>= 2.1.5)",
+        "utils"
+      ],
+      "Suggests": [
+        "Biobase",
+        "BiocManager",
+        "foreign",
+        "knitr",
+        "MASS",
+        "plumber (>= 0.3.2)",
+        "quarto",
+        "RCurl",
+        "reticulate",
+        "rmarkdown (>= 1.1)",
+        "shiny",
+        "testthat (>= 3.1.9)",
+        "webfakes",
+        "withr"
+      ],
+      "VignetteBuilder": "knitr, rmarkdown",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Config/testthat/edition": "3",
+      "Config/testthat/parallel": "true",
+      "Config/Python/Note": "Python <= 3.10 requires tomllib package for pyproject.toml parsing",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.3",
+      "NeedsCompilation": "no",
+      "Author": "Aron Atkins [aut, cre], Toph Allen [aut], Hadley Wickham [aut], Jonathan McPherson [aut], JJ Allaire [aut], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Aron Atkins <aron@posit.co>",
+      "Repository": "CRAN"
+    },
+    "rstudioapi": {
+      "Package": "rstudioapi",
+      "Version": "0.18.0",
+      "Source": "Repository",
+      "Title": "Safely Access the RStudio API",
+      "Description": "Access the RStudio API (if available) and provide informative error messages when it's not.",
+      "Authors@R": "c( person(\"Kevin\", \"Ushey\", role = c(\"aut\", \"cre\"), email = \"kevin@rstudio.com\"), person(\"JJ\", \"Allaire\", role = c(\"aut\"), email = \"jj@posit.co\"), person(\"Hadley\", \"Wickham\", role = c(\"aut\"), email = \"hadley@posit.co\"), person(\"Gary\", \"Ritchie\", role = c(\"aut\"), email = \"gary@posit.co\"), person(family = \"RStudio\", role = \"cph\") )",
+      "Maintainer": "Kevin Ushey <kevin@rstudio.com>",
+      "License": "MIT + file LICENSE",
+      "URL": "https://rstudio.github.io/rstudioapi/, https://github.com/rstudio/rstudioapi",
+      "BugReports": "https://github.com/rstudio/rstudioapi/issues",
+      "RoxygenNote": "7.3.3",
+      "Suggests": [
+        "testthat",
+        "knitr",
+        "rmarkdown",
+        "clipr",
+        "covr",
+        "curl",
+        "jsonlite",
+        "withr"
+      ],
+      "VignetteBuilder": "knitr",
+      "Encoding": "UTF-8",
+      "NeedsCompilation": "no",
+      "Author": "Kevin Ushey [aut, cre], JJ Allaire [aut], Hadley Wickham [aut], Gary Ritchie [aut], RStudio [cph]",
+      "Repository": "CRAN"
+    },
     "sass": {
       "Package": "sass",
       "Version": "0.4.10",
@@ -952,6 +1289,35 @@
       "NeedsCompilation": "yes",
       "Author": "Joe Cheng [aut], Timothy Mastny [aut], Richard Iannone [aut] (<https://orcid.org/0000-0003-3925-190X>), Barret Schloerke [aut] (<https://orcid.org/0000-0001-9986-114X>), Carson Sievert [aut, cre] (<https://orcid.org/0000-0002-4958-2844>), Christophe Dervieux [ctb] (<https://orcid.org/0000-0003-4474-2498>), RStudio [cph, fnd], Sass Open Source Foundation [ctb, cph] (LibSass library), Greter Marcel [ctb, cph] (LibSass library), Mifsud Michael [ctb, cph] (LibSass library), Hampton Catlin [ctb, cph] (LibSass library), Natalie Weizenbaum [ctb, cph] (LibSass library), Chris Eppstein [ctb, cph] (LibSass library), Adams Joseph [ctb, cph] (json.cpp), Trifunovic Nemanja [ctb, cph] (utf8.h)",
       "Maintainer": "Carson Sievert <carson@rstudio.com>",
+      "Repository": "CRAN"
+    },
+    "scam": {
+      "Package": "scam",
+      "Version": "1.2-20",
+      "Source": "Repository",
+      "Authors@R": "person(given = \"Natalya\", family = \"Pya\", role = c(\"aut\", \"cre\"), email = \"nat.pya@gmail.com\")",
+      "Maintainer": "Natalya Pya <nat.pya@gmail.com>",
+      "Title": "Shape Constrained Additive Models",
+      "Date": "2025-10-14",
+      "Description": "Generalized additive models under shape constraints on the component functions of the linear predictor.        Models can include multiple shape-constrained (univariate and bivariate) and unconstrained terms. Routines of the  package 'mgcv' are used to set up the model matrix, print,  and plot the results. Multiple smoothing parameter  estimation by the Generalized Cross Validation or similar. See Pya and Wood (2015) <doi:10.1007/s11222-013-9448-7>  for an overview. A broad selection of shape-constrained  smoothers, linear functionals of smooths with shape constraints, and Gaussian models with AR1 residuals.",
+      "Depends": [
+        "R (>= 3.6.0)"
+      ],
+      "Imports": [
+        "mgcv (>= 1.8-2)",
+        "methods",
+        "stats",
+        "graphics",
+        "Matrix",
+        "splines"
+      ],
+      "Suggests": [
+        "nlme"
+      ],
+      "License": "GPL (>= 2)",
+      "LazyLoad": "yes",
+      "NeedsCompilation": "yes",
+      "Author": "Natalya Pya [aut, cre]",
       "Repository": "CRAN"
     },
     "shiny": {
@@ -1060,6 +1426,38 @@
       "Maintainer": "Dean Attali <daattali@gmail.com>",
       "Repository": "CRAN"
     },
+    "snowflakeauth": {
+      "Package": "snowflakeauth",
+      "Version": "0.2.1",
+      "Source": "Repository",
+      "Title": "Authentication Helpers for 'Snowflake'",
+      "Authors@R": "c( person(\"Aaron\", \"Jacobs\", , \"aaron.jacobs@posit.co\", role = c(\"aut\")), person(\"E. David\", \"Aja\", , \"david@posit.co\", role = c(\"aut\", \"cre\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "Authentication helpers for 'Snowflake'. It provides compatibility with authentication approaches supported by the 'Snowflake Connector for Python' <https://pypi.org/project/snowflake-connector-python> and the 'Snowflake CLI' <https://pypi.org/project/snowflake-cli>.",
+      "License": "MIT + file LICENSE",
+      "Encoding": "UTF-8",
+      "Imports": [
+        "cli",
+        "curl",
+        "jsonlite",
+        "RcppTOML",
+        "rlang",
+        "jose",
+        "openssl"
+      ],
+      "Suggests": [
+        "httpuv",
+        "testthat (>= 3.0.0)",
+        "withr"
+      ],
+      "RoxygenNote": "7.3.2",
+      "Config/testthat/edition": "3",
+      "URL": "https://posit-dev.github.io/snowflakeauth/, https://github.com/posit-dev/snowflakeauth",
+      "BugReports": "https://github.com/posit-dev/snowflakeauth/issues",
+      "NeedsCompilation": "no",
+      "Author": "Aaron Jacobs [aut], E. David Aja [aut, cre], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "E. David Aja <david@posit.co>",
+      "Repository": "CRAN"
+    },
     "sourcetools": {
       "Package": "sourcetools",
       "Version": "0.1.7-1",
@@ -1085,7 +1483,7 @@
     "spade": {
       "Package": "spade",
       "Version": "0.0.0.9000",
-      "Source": "unknown",
+      "Source": "GitHub",
       "Title": "What the Package Does (One Line, Title Case)",
       "Authors@R": "person(\"First\", \"Last\", , \"first.last@example.com\", role = c(\"aut\", \"cre\"))",
       "Description": "What the package does (one paragraph).",
@@ -1101,12 +1499,79 @@
       "Config/testthat/edition": "3",
       "Imports": [
         "shiny",
-        "shinyjs"
+        "shinyjs",
+        "splines2",
+        "scam"
       ],
       "VignetteBuilder": "knitr",
-      "NeedsCompilation": "no",
       "Author": "First Last [aut, cre]",
-      "Maintainer": "First Last <first.last@example.com>"
+      "Maintainer": "First Last <first.last@example.com>",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "mkrzyzanska",
+      "RemoteRepo": "spade",
+      "RemoteRef": "master",
+      "RemoteSha": "0093603cafa4d52a4ab23db9a74fcf457de4279c"
+    },
+    "splines2": {
+      "Package": "splines2",
+      "Version": "0.5.4",
+      "Source": "Repository",
+      "Title": "Regression Spline Functions and Classes",
+      "Authors@R": "c( person(given = \"Wenjie\", family = \"Wang\", email = \"wang@wwenjie.org\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0003-0363-3180\")), person(given = \"Jun\", family = \"Yan\", role = \"aut\", comment = c(ORCID = \"0000-0003-4401-7296\")) )",
+      "Description": "Constructs basis functions of B-splines, M-splines, I-splines, convex splines (C-splines), periodic splines, natural cubic splines, generalized Bernstein polynomials, their derivatives, and integrals (except C-splines) by closed-form recursive formulas. It also contains a C++ head-only library integrated with Rcpp. See Wang and Yan (2021) <doi:10.6339/21-JDS1020> for details.",
+      "Imports": [
+        "stats",
+        "graphics",
+        "Rcpp"
+      ],
+      "LinkingTo": [
+        "Rcpp",
+        "RcppArmadillo"
+      ],
+      "Suggests": [
+        "knitr",
+        "rmarkdown",
+        "tinytest",
+        "RcppArmadillo"
+      ],
+      "Depends": [
+        "R (>= 3.2.3)"
+      ],
+      "VignetteBuilder": "knitr",
+      "License": "GPL (>= 3)",
+      "URL": "https://wwenjie.org/splines2, https://github.com/wenjie2wang/splines2",
+      "BugReports": "https://github.com/wenjie2wang/splines2/issues",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "NeedsCompilation": "yes",
+      "Author": "Wenjie Wang [aut, cre] (<https://orcid.org/0000-0003-0363-3180>), Jun Yan [aut] (<https://orcid.org/0000-0003-4401-7296>)",
+      "Maintainer": "Wenjie Wang <wang@wwenjie.org>",
+      "Repository": "CRAN"
+    },
+    "sys": {
+      "Package": "sys",
+      "Version": "3.4.3",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Powerful and Reliable Tools for Running System Commands in R",
+      "Authors@R": "c(person(\"Jeroen\", \"Ooms\", role = c(\"aut\", \"cre\"),  email = \"jeroenooms@gmail.com\", comment = c(ORCID = \"0000-0002-4035-0289\")), person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = \"ctb\"))",
+      "Description": "Drop-in replacements for the base system2() function with fine control and consistent behavior across platforms. Supports clean interruption, timeout,  background tasks, and streaming STDIN / STDOUT / STDERR over binary or text  connections. Arguments on Windows automatically get encoded and quoted to work  on different locales.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://jeroen.r-universe.dev/sys",
+      "BugReports": "https://github.com/jeroen/sys/issues",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.1.1",
+      "Suggests": [
+        "unix (>= 1.4)",
+        "spelling",
+        "testthat"
+      ],
+      "Language": "en-US",
+      "NeedsCompilation": "yes",
+      "Author": "Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>), Gábor Csárdi [ctb]",
+      "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
+      "Repository": "CRAN"
     },
     "withr": {
       "Package": "withr",
@@ -1174,6 +1639,32 @@
       "Repository": "CRAN",
       "NeedsCompilation": "no",
       "Author": "David B. Dahl [aut], David Scott [aut, cre], Charles Roosen [aut], Arni Magnusson [aut], Jonathan Swinton [aut], Ajay Shah [ctb], Arne Henningsen [ctb], Benno Puetz [ctb], Bernhard Pfaff [ctb], Claudio Agostinelli [ctb], Claudius Loehnert [ctb], David Mitchell [ctb], David Whiting [ctb], Fernando da Rosa [ctb], Guido Gay [ctb], Guido Schulz [ctb], Ian Fellows [ctb], Jeff Laake [ctb], John Walker [ctb], Jun Yan [ctb], Liviu Andronic [ctb], Markus Loecher [ctb], Martin Gubri [ctb], Matthieu Stigler [ctb], Robert Castelo [ctb], Seth Falcon [ctb], Stefan Edwards [ctb], Sven Garbade [ctb], Uwe Ligges [ctb]"
+    },
+    "yaml": {
+      "Package": "yaml",
+      "Version": "2.3.12",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Methods to Convert R Data to YAML and Back",
+      "Authors@R": "c( person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"cre\", comment = c(ORCID = \"0000-0003-4757-117X\")), person(\"Shawn\", \"Garbett\", , \"shawn.garbett@vumc.org\", role = \"ctb\", comment = c(ORCID = \"0000-0003-4079-5621\")), person(\"Jeremy\", \"Stephens\", role = c(\"aut\", \"ctb\")), person(\"Kirill\", \"Simonov\", role = \"aut\"), person(\"Yihui\", \"Xie\", role = \"ctb\", comment = c(ORCID = \"0000-0003-0645-5666\")), person(\"Zhuoer\", \"Dong\", role = \"ctb\"), person(\"Jeffrey\", \"Horner\", role = \"ctb\"), person(\"reikoch\", role = \"ctb\"), person(\"Will\", \"Beasley\", role = \"ctb\", comment = c(ORCID = \"0000-0002-5613-5006\")), person(\"Brendan\", \"O'Connor\", role = \"ctb\"), person(\"Michael\", \"Quinn\", role = \"ctb\"), person(\"Charlie\", \"Gao\", role = \"ctb\"), person(c(\"Gregory\", \"R.\"), \"Warnes\", role = \"ctb\"), person(c(\"Zhian\", \"N.\"), \"Kamvar\", role = \"ctb\") )",
+      "Description": "Implements the 'libyaml' 'YAML' 1.1 parser and emitter (<https://pyyaml.org/wiki/LibYAML>) for R.",
+      "License": "BSD_3_clause + file LICENSE",
+      "URL": "https://yaml.r-lib.org, https://github.com/r-lib/yaml/",
+      "BugReports": "https://github.com/r-lib/yaml/issues",
+      "Suggests": [
+        "knitr",
+        "rmarkdown",
+        "testthat (>= 3.0.0)"
+      ],
+      "Config/testthat/edition": "3",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.3",
+      "VignetteBuilder": "knitr",
+      "NeedsCompilation": "yes",
+      "Author": "Hadley Wickham [cre] (ORCID: <https://orcid.org/0000-0003-4757-117X>), Shawn Garbett [ctb] (ORCID: <https://orcid.org/0000-0003-4079-5621>), Jeremy Stephens [aut, ctb], Kirill Simonov [aut], Yihui Xie [ctb] (ORCID: <https://orcid.org/0000-0003-0645-5666>), Zhuoer Dong [ctb], Jeffrey Horner [ctb], reikoch [ctb], Will Beasley [ctb] (ORCID: <https://orcid.org/0000-0002-5613-5006>), Brendan O'Connor [ctb], Michael Quinn [ctb], Charlie Gao [ctb], Gregory R. Warnes [ctb], Zhian N. Kamvar [ctb]",
+      "Maintainer": "Hadley Wickham <hadley@posit.co>",
+      "Repository": "CRAN"
     }
   }
 }

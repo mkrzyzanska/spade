@@ -524,7 +524,6 @@ fitdist <-
 
     probs <- data.frame(probs)
     names(probs) <- expertnames
-    print(paste("best fitting is",best.fitting))
     fit <- list(Normal = dfn, Student.t = dft, Skewnormal = dfsn,
                 Gamma = dfg, Log.normal = dfln,
                 Log.Student.t = dflt, Beta = dfb,
@@ -536,6 +535,5 @@ fitdist <-
                 probs = t(probs), limits = limits,
                 notes = notes)
     class(fit) <- "elicitation"
-    print(fit)
     fit
   }

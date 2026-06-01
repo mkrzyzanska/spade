@@ -1,2 +1,2 @@
 library(spade)
-spade::run_app()
+spade::run_spade()
