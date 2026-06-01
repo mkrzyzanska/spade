@@ -122,7 +122,7 @@ plotfit <- function(fit,
   if(length(fit)==1){
     emptyPlot <- ggplot2::ggplot() +
       ggplot2::theme_void(base_size = fs) +
-      xlim(0, 10)
+      ggplot2::xlim(0, 10)
       return(emptyPlot +
                annotate("text",0,0,
                         label=fit,
@@ -168,7 +168,7 @@ plotfit <- function(fit,
 
   emptyPlot <- ggplot2::ggplot() +
     ggplot2::theme_void(base_size = fs) +
-    xlim(0, 10)
+    ggplot2::xlim(0, 10)
 
   # If best fit chosen, find out if any parametric fits are available
   # either for all experts, or for selected expert
