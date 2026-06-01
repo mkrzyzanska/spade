@@ -5,7 +5,9 @@
 <!-- badges: end -->
 
 The **Sheffield Probabilistic Artefact Date Elicitation (SPADE)** package contains a shiny app that can be used to elicit probabilistic date estimates for artefacts, based on expert knowledge. 
-It has been developed as part of the **Quantifying Uncertainty in Expert Archaeological Evidence (QUEADE)** project funded by Leverhulme Trust and accompanies the publication: Krzyzanska, M., May, K., Oakley, J. E., Wigg-Wolf, D., Buck, C. E., Quantifying uncertainty in Expert Archaeologicl Dating Evidence: a formal knowledge elicitation approach. Submitted to the *Journal of Archaeological Science*.
+It has been developed as part of the **Quantifying Uncertainty in Expert Archaeological Evidence (QUEADE)** project funded by Leverhulme Trust and accompanies the publication:  
+
+Krzyzanska, M., May, K., Oakley, J. E., Wigg-Wolf, D., Buck, C. E., Quantifying uncertainty in Expert Archaeological Dating Evidence: a formal knowledge elicitation approach. Submitted to the *Journal of Archaeological Science*.
 
 
 ## Installation and running the app:
@@ -31,4 +33,6 @@ spade::run_spade()
 ```
 
 ## How to cite
+
+
 
