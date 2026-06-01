@@ -1,29 +1,36 @@
-# spade
+# SPADE
 
-The Sheffield Probabilistic Dates Elicitation (SPADE) package contains a
-shiny app that can be used to elicit probabilistic date estimates for
-artefacts, based on expert knowledge. It has been developed as part of
-the Quantifying Uncertainty in Expert Archaeological Evidence (QUEADE)
-project funded by Leverhulme Trust and accompanies the publication ’’
-submitted to the Journal of Archaeological Science.
+The **Sheffield Probabilistic Artefact Date Elicitation (SPADE)**
+package contains a shiny app that can be used to elicit probabilistic
+date estimates for artefacts, based on expert knowledge. It has been
+developed as part of the **Quantifying Uncertainty in Expert
+Archaeological Evidence (QUEADE)** project funded by Leverhulme Trust
+and accompanies the publication: Krzyzanska, M., May, K., Oakley, J. E.,
+Wigg-Wolf, D., Buck, C. E., Quantifying uncertainty in Expert
+Archaeologicl Dating Evidence: a formal knowledge elicitation approach.
+Submitted to the *Journal of Archaeological Science*.
 
-## Installation
+## Installation and running the app:
 
-You can install spade
+Install the devtools package if you do not already have it:
 
 ``` r
 
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+install.packages("devtools")
 ```
 
-## Example
-
-This is a basic example which shows you how to solve a common problem:
+Install the latest version of spade directly from GitHub:
 
 ``` r
 
-library(spade)
-## basic example code
+devtools::install_github("mkrzyzanska/spade")
+```
+
+Launch the application:
+
+``` r
+
+spade::run_spade()
 ```
 
 ## How to cite
