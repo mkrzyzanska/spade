@@ -287,7 +287,7 @@ server <- function(input, output,session) {
         need(is.list(dat), "Invalid file"),
       )
 
-
+      existing_bins<-isolate(nBins())#
       pending_dat(dat)
       rl$chips <- rep(0, dat$nBins)
 
@@ -332,18 +332,17 @@ server <- function(input, output,session) {
 
       session$onFlushed(function() {
         x  <- dat$chips
-        nb <- isolate(nBins())
+        nb <- dat$nBins
 
         length(x) <- nb
         x[is.na(x)] <- 0
 
-        print("rl chips on loading")
         rl$chips <- x
         rl$allBinsPr <- cumsum(x)/sum(x)
         rl$nonEmpty <- cumsum(x)/sum(x) > 0 & cumsum(x)/sum(x) < 1
 
 
-        pause(TRUE)
+        if(existing_bins!= nb){pause(TRUE)}
         is_loading(FALSE)
       }, once = TRUE
       )
@@ -762,16 +761,12 @@ server <- function(input, output,session) {
       if (input$customiseGraph==TRUE) {
         if(is.null(input$nBins)|is.na(input$nBins)){
           updateNumericInput(session, "nBins", value = nBins())
-          print("Updated on checkbox")
-
         }
         if(pause()!=TRUE){
-          print("Updated on checkbox 2")
           nBins(input$nBins)  # Set nBins to user input when the checkbox is checked
         }
       } else {
           # Reset to auto-calculated bins when checkbox is unchecked
-          print("Update on checkbox3")
           req(nIntervals(), distributionRange())
           updateBins()
       }
@@ -786,7 +781,6 @@ server <- function(input, output,session) {
 
     observeEvent(input$reset_tokens, {
       # Assign your specific values here
-      print("Reset chips")
       rl$chips <- rl$chips <- rep(0, nBins())
 
     })
@@ -796,7 +790,6 @@ server <- function(input, output,session) {
       if (!isTRUE(input$customiseGraph)) {  # Only run when unchecked
         req(nIntervals(), distributionRange(),startDate(),endDate())  # Ensure required values exist
         updateBins()  # Call function to update bins dynamically
-        print("reset2")
         rl$chips <- rep(0, nBins())
       }
     })
@@ -805,7 +798,6 @@ server <- function(input, output,session) {
     updateBins <- function() {
       if (input$customiseGraph==TRUE) {
         return()}else{# Skip if in custom mode
-          (print("check4"))
       if (is.numeric(nIntervals()) & is.numeric(distributionRange())) {
         if (distributionRange() > 20 & distributionRange() <= 50) {
           nBins(nIntervals() / 2)
@@ -833,6 +825,7 @@ server <- function(input, output,session) {
       } else {
         nBins(NULL)  # Set to NULL if values are invalid
       }
+
     }
     }
 
@@ -880,7 +873,6 @@ server <- function(input, output,session) {
       po <- isolate(pause_override())
 
       if(pa!=TRUE & up!=TRUE){
-        print("chips update")
       rl$chips <- rep(0, nBins())  # Update rl$chips with the new number of bins
       }
       else if(pa==TRUE & up==TRUE){
@@ -934,13 +926,13 @@ server <- function(input, output,session) {
 
     # Fit distributions to elicited judgements ----
     myfit <- reactive({
-      #req(startDate(),endDate(), v(), p(), input$tdf,trueStart(),trueEnd())
+      req(startDate(),endDate(), v(), p(), input$tdf,trueStart(),trueEnd())
       check <- checkJudgementsValid(probs = p(), vals = v(),
                            tdf = input$tdf,
                            lower = startDate(),
                            upper= endDate()
                                    )
-      if(check$valid == TRUE){
+      if(check$valid == TRUE & is_loading()==FALSE & pause()==FALSE){
        return(fitdist(vals = v(), probs = p(), lower = trueStart(), upper = trueEnd(),tdf = input$tdf))
       }else{
         return(check$error)}

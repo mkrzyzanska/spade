@@ -1,5 +1,5 @@
-#' Plot the elicited cumulative probabilities 
-#' 
+#' Plot the elicited cumulative probabilities
+#'
 #' Plots the elicited cumulative probabilities and, optionally,
 #' a fitted CDF. Elicited are shown as filled circles, and
 #' limits are shown as clear circles.
@@ -29,9 +29,9 @@
 #' @param xaxisUpper upper limit for the x-axis.
 #' @param xlab x-axis label.
 #' @param ylab y-axis label.
-#' 
+#'
 #' @examples
-#' 
+#'
 #' \dontrun{
 #' vQuartiles <- c(30, 35, 45)
 #' pQuartiles<- c(0.25, 0.5, 0.75)
@@ -39,18 +39,18 @@
 #' makeCDFPlot(lower = 0, v = vQuartiles, p = pQuartiles,
 #'  upper = 100, fit = myfit, dist = "gamma",
 #'  showFittedCDF = TRUE, showQuantiles = TRUE)
-#' 
-#' 
+#'
+#'
 #' }
 #'
 #' @export
 
 makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
-                        fit = NULL, 
+                        fit = NULL,
                         dist = NULL,
                         showFittedCDF = FALSE,
                         showQuantiles = FALSE,
-                        ql = 0.05, 
+                        ql = 0.05,
                         qu = 0.95,
                         ex = 1,
                         sf = 3,
@@ -58,27 +58,26 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                         xaxisUpper = upper,
                         xlab = "x",
                         ylab = expression(P(X<=x)),min_val=NULL,max_val=NULL){
-  
+
   # Hack to avoid CRAN check NOTE
-  
+
   x <- NULL
-  
+
 
     xticks<-c(xaxisLower, xaxisUpper, v)
 
-      print(paste("xticks",xticks))
-      
+
       convert_year <- function(year) {
           if (year < 1) year-1 else year
       }
 
      new_ticks<-sapply(xticks,convert_year)
 
-    
-    
-  
+
+
+
   p1 <- ggplot(data.frame(x = c(xaxisLower, xaxisUpper)), aes(x = x)) +
-    annotate("point", x = v, y = p, size = 5) + 
+    annotate("point", x = v, y = p, size = 5) +
     annotate("point", x = c(min_val, max_val), y = c(0, 1), size = 5, shape = 1)+
     labs(y = ylab, x = xlab) +
     scale_x_continuous(breaks = c(xaxisLower, xaxisUpper, v), labels=round(abs(new_ticks),1),
@@ -99,40 +98,40 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
      } else {
     #    startDate=startDate+1
      #   nBins=nBins-1
-        p1 <- p1 + 
+        p1 <- p1 +
         geom_vline(xintercept = 1, linetype = "dashed", color = "red", size = 1) +  # Vertical line
        #  Annotate BCE (left side of x = 1)
              annotate("text", x = 1 - 0.3, y = 0.8, label = "BCE", color = "red", size = 6, hjust = 1) +
-  
+
               # Annotate CE (right side of x = 1)
-              annotate("text", x = 1 + 0.3, y = 0.8, label = "CE", color = "red", size = 6, hjust = 0) 
+              annotate("text", x = 1 + 0.3, y = 0.8, label = "CE", color = "red", size = 6, hjust = 0)
            p1<-p1+ xlab("YEAR")
      }
-  
-  
+
+
   # Add in CDF
-  
+
   if(showFittedCDF){
-    
+
     if(dist == "best"){
       dist <- fit$best.fitting[ex, 1]
     }
-    
-    
+
+
     if(dist == "hist"){
       dist.title <- "Histogram fit"
       p1 <- p1 + annotate("segment", x = c(min_val, v),
                             y = c(0, p),
                             xend = c(v, max_val),
-                            yend = c(p, 1)) 
+                            yend = c(p, 1))
       if(showQuantiles){
         xl <- qhist(ql, c(lower, v, upper), c(0, p, 1))
         xu <- qhist(qu, c(lower, v, upper), c(0, p, 1))
-          p1 <- p1 + 
-          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
-          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+          p1 <- p1 +
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) +
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper)
       }
-                                  
+
     }
     if(dist == "normal"){
       if(is.na(fit$ssq[ex, "normal"])){
@@ -143,17 +142,17 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                           ", sd = ",
                           signif(fit$Normal[ex,2], sf), ")",
                           sep="")
-      
-      p1 <- p1 + stat_function(fun = pnorm, 
+
+      p1 <- p1 + stat_function(fun = pnorm,
                              args = list(mean = fit$Normal[1, 1],
                                          sd = fit$Normal[1, 2])
                                )
       if(showQuantiles){
         xl <- qnorm(ql, mean = fit$Normal[1, 1], sd = fit$Normal[1, 2])
         xu <- qnorm(qu, mean = fit$Normal[1, 1], sd = fit$Normal[1, 2])
-        p1 <- p1 + 
-          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
-          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+        p1 <- p1 +
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) +
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper)
         }
       }
     }
@@ -167,23 +166,23 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                        signif(fit$Student.t[ex,2], sf),
                        ")",
                        sep="")
-      
+
       tcdf <- function(x){pt((x - fit$Student.t[1, 1]) /
                                fit$Student.t[1, 2], fit$Student.t[1, 3])}
       p1 <- p1 + stat_function(fun = tcdf)
-      
+
       if(showQuantiles){
-        xl <- fit$Student.t[1, 1] + 
+        xl <- fit$Student.t[1, 1] +
           fit$Student.t[1, 2] * qt(ql, fit$Student.t[1, 3])
-        xu <- fit$Student.t[1, 1] + 
+        xu <- fit$Student.t[1, 1] +
           fit$Student.t[1, 2] * qt(qu, fit$Student.t[1, 3])
-        p1 <- p1 + 
-          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
-          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+        p1 <- p1 +
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) +
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper)
       }
       }
     }
-    
+
     if(dist == "skewnormal"){
       if(is.na(fit$ssq[ex, "skewnormal"])){
         dist.title <- "Skew normal distribution not fitted"
@@ -195,8 +194,8 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                             ", slant = ",
                             signif(fit$Skewnormal[ex,3], sf),")",
                             sep="")
-        
-        p1 <- p1 + stat_function(fun = sn::psn, 
+
+        p1 <- p1 + stat_function(fun = sn::psn,
                                  args = list(xi = fit$Skewnormal[1, 1],
                                              omega = fit$Skewnormal[1, 2],
                                              alpha = fit$Skewnormal[1, 3])
@@ -208,14 +207,14 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
           xu <- sn::qsn(qu, xi = fit$Skewnormal[1, 1],
                         omega = fit$Skewnormal[1, 2],
                         alpha = fit$Skewnormal[1, 3])
-          p1 <- p1 + 
-            addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
-            addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+          p1 <- p1 +
+            addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) +
+            addQuantileCDF(xaxisLower, xu, qu, xaxisUpper)
         }
       }
     }
-    
-    
+
+
     if(dist == "lognormal"){
       if(is.na(fit$ssq[ex, "lognormal"])){
         dist.title <- "Log normal distribution not fitted"
@@ -225,28 +224,28 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                          ", ",
                          signif(fit$Log.normal[ex,2], sf), ")",
                          sep="")
-      
+
       lncdf <- function(x){
-        plnorm(x - lower, 
+        plnorm(x - lower,
                meanlog = fit$Log.normal[1, 1],
                sdlog = fit$Log.normal[1, 2])
-        
+
       }
       p1 <- p1 + stat_function(fun = lncdf)
-      
+
       if(showQuantiles){
         xl <- lower + qlnorm(ql, meanlog = fit$Log.normal[1, 1],
                              sdlog = fit$Log.normal[1, 2])
         xu <- lower + qlnorm(qu, meanlog = fit$Log.normal[1, 1],
                              sdlog = fit$Log.normal[1, 2])
-        p1 <- p1 + 
-          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
-          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+        p1 <- p1 +
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) +
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper)
       }
       }
-      
+
     }
-    
+
     if(dist == "mirrorlognormal"){
       if(is.na(fit$ssq[ex, "mirrorlognormal"])){
         dist.title <- "Mirror log normal distribution not fitted"
@@ -256,28 +255,28 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                          ", ",
                          signif(fit$mirrorlognormal[ex,2], sf), ")",
                          sep="")
-      
+
       mirrorlncdf <- function(x){
-        1- plnorm(upper - x, 
+        1- plnorm(upper - x,
                meanlog = fit$mirrorlognormal[1, 1],
                sdlog = fit$mirrorlognormal[1, 2])
-        
+
       }
       p1 <- p1 + stat_function(fun = mirrorlncdf)
-      
+
       if(showQuantiles){
         xl <- upper - qlnorm(1 - ql, meanlog = fit$mirrorlognormal[1, 1],
                              sdlog = fit$mirrorlognormal[1, 2])
         xu <- upper -  qlnorm(1 - qu, meanlog = fit$mirrorlognormal[1, 1],
                              sdlog = fit$mirrorlognormal[1, 2])
-        p1 <- p1 + 
-          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
-          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+        p1 <- p1 +
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) +
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper)
       }
       }
-      
+
     }
-    
+
     if(dist == "gamma"){
       if(is.na(fit$ssq[ex, "gamma"])){
         dist.title <- "Gamma distribution not fitted"
@@ -287,26 +286,26 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                          ", ",
                          signif(fit$Gamma[ex,2], sf),
                          ")", sep="")
-      
-      gcdf <- function(x){pgamma(x - lower, 
+
+      gcdf <- function(x){pgamma(x - lower,
                                  shape = fit$Gamma[1, 1],
                                  rate = fit$Gamma[1, 2])}
       p1 <- p1 + stat_function(fun = gcdf)
-      
+
       if(showQuantiles){
-        xl <- lower + qgamma(ql,  
+        xl <- lower + qgamma(ql,
                              shape = fit$Gamma[1, 1],
                              rate = fit$Gamma[1, 2])
-        xu <- lower + qgamma(qu,  
+        xu <- lower + qgamma(qu,
                              shape = fit$Gamma[1, 1],
                              rate = fit$Gamma[1, 2])
-        p1 <- p1 + 
-          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
-          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+        p1 <- p1 +
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) +
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper)
       }
       }
     }
-    
+
     if(dist == "mirrorgamma"){
       if(is.na(fit$ssq[ex, "mirrorgamma"])){
         dist.title <- "Mirror gamma distribution not fitted"
@@ -316,26 +315,26 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                          ", ",
                          signif(fit$mirrorgamma[ex,2], sf),
                          ")", sep="")
-      
-      mirrorgcdf <- function(x){1 - pgamma(upper - x, 
+
+      mirrorgcdf <- function(x){1 - pgamma(upper - x,
                                  shape = fit$mirrorgamma[1, 1],
                                  rate = fit$mirrorgamma[1, 2])}
       p1 <- p1 + stat_function(fun = mirrorgcdf)
-      
+
       if(showQuantiles){
-        xl <- upper - qgamma(1 - ql,  
+        xl <- upper - qgamma(1 - ql,
                              shape = fit$mirrorgamma[1, 1],
                              rate = fit$mirrorgamma[1, 2])
-        xu <- upper - qgamma(1 - qu,  
+        xu <- upper - qgamma(1 - qu,
                              shape = fit$mirrorgamma[1, 1],
                              rate = fit$mirrorgamma[1, 2])
-        p1 <- p1 + 
-          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
-          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+        p1 <- p1 +
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) +
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper)
       }
       }
     }
-    
+
     if(dist == "logt"){
       if(is.na(fit$ssq[ex, "logt"])){
         dist.title <- "Log Student-t distribution not fitted"
@@ -345,30 +344,30 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                          ", ",
                          signif(fit$Log.Student.t[ex,2], sf),
                          ")", sep="")
-      
+
       lntcdf <- function(x){
         # Need to handle case of x < lower
-        
+
         p <- pt((log(abs(x - lower)) - fit$Log.Student.t[1, 1]) /
-                  fit$Log.Student.t[1, 2], 
+                  fit$Log.Student.t[1, 2],
                 fit$Log.Student.t[1, 3])
         p[x <= lower] <- 0
         p
       }
       p1 <- p1 + stat_function(fun = lntcdf)
-      
+
       if(showQuantiles){
-        xl <- lower + exp(fit$Log.Student.t[1, 1] + 
-                            fit$Log.Student.t[1, 2] * 
+        xl <- lower + exp(fit$Log.Student.t[1, 1] +
+                            fit$Log.Student.t[1, 2] *
                             qt(ql, fit$Log.Student.t[1, 3]))
-        xu <- lower + exp(fit$Log.Student.t[1, 1] + 
-                            fit$Log.Student.t[1, 2] * 
+        xu <- lower + exp(fit$Log.Student.t[1, 1] +
+                            fit$Log.Student.t[1, 2] *
                             qt(qu, fit$Log.Student.t[1, 3]))
-        p1 <- p1 + 
-          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
-          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+        p1 <- p1 +
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) +
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper)
       }
-      
+
     }
     }
     if(dist == "mirrorlogt"){
@@ -380,62 +379,62 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                          ", ",
                          signif(fit$mirrorlogt[ex,2], sf),
                          ")", sep="")
-      
+
       mirrorlntcdf <- function(x){
         # Need to handle case of x > upper
-        
+
         p <- 1 - pt((log(abs(upper - x)) - fit$mirrorlogt[1, 1]) /
-                  fit$mirrorlogt[1, 2], 
+                  fit$mirrorlogt[1, 2],
                 fit$mirrorlogt[1, 3])
         p[x >= upper] <- 1
         p
       }
       p1 <- p1 + stat_function(fun = mirrorlntcdf)
-      
+
       if(showQuantiles){
-        xl <- upper -  exp(fit$mirrorlogt[1, 1] + 
-                            fit$mirrorlogt[1, 2] * 
+        xl <- upper -  exp(fit$mirrorlogt[1, 1] +
+                            fit$mirrorlogt[1, 2] *
                             qt(1-ql, fit$mirrorlogt[1, 3]))
-        xu <- upper -  exp(fit$mirrorlogt[1, 1] + 
-                            fit$mirrorlogt[1, 2] * 
+        xu <- upper -  exp(fit$mirrorlogt[1, 1] +
+                            fit$mirrorlogt[1, 2] *
                             qt(1 - qu, fit$mirrorlogt[1, 3]))
-        p1 <- p1 + 
-          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
-          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+        p1 <- p1 +
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) +
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper)
       }
-      
+
     }
     }
-      
+
     if(dist == "beta"){
-      
+
       if(is.na(fit$ssq[ex, "beta"])){
         dist.title <- "Beta distribution not fitted"
       }else{
-      
+
       dist.title =paste("Beta(",
                         signif(fit$Beta[ex,1], sf),
                         ", ", signif(fit$Beta[ex,2], sf),
                         ")", sep="")
-      
-     
-      bcdf <- function(x){pbeta((x - lower) / (upper - lower), 
+
+
+      bcdf <- function(x){pbeta((x - lower) / (upper - lower),
                                  shape1 = fit$Beta[1, 1],
                                  shape2 = fit$Beta[1, 2])}
       p1 <- p1 + stat_function(fun = bcdf)
-      
+
       if(showQuantiles){
-        xl <- lower + (upper - lower) * qbeta(ql, 
+        xl <- lower + (upper - lower) * qbeta(ql,
                                               shape1 = fit$Beta[1, 1],
                                               shape2 = fit$Beta[1, 2])
-        xu <- lower + (upper - lower) * qbeta(qu, 
+        xu <- lower + (upper - lower) * qbeta(qu,
                                               shape1 = fit$Beta[1, 1],
                                               shape2 = fit$Beta[1, 2])
-        p1 <- p1 + 
-          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
-          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+        p1 <- p1 +
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) +
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper)
       }
-      
+
       }
     }
 
@@ -450,7 +449,7 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
 
         }
         p1<-p1 + geom_line(data = ns_df, aes(x = x, y = fx),inherit.aes=FALSE)
-        
+
     }
 
      if(dist == "MP"){
@@ -465,13 +464,13 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
         }
         p1<-p1 + geom_line(data = mp_df, aes(x = x, y = fx),inherit.aes=FALSE)
     }
-   
-      
-      
-  p1 <- p1 + labs(title = dist.title)  
+
+
+
+  p1 <- p1 + labs(title = dist.title)
   }
- 
-  
-  p1 
-  
+
+
+  p1
+
  }
