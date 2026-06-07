@@ -108,15 +108,15 @@ ui <- shinyUI(fluidPage(
                     ),
 
                     column(2, selectInput("outFormat", label = "Report format",
-                                          choices = list('html' = "html_document",
-                                                         'pdf' = "pdf_document",
+                                          choices = list('pdf' = "pdf_document",
+                                                          'html' = "html_document",
                                                          'Word' = "word_document")),
                               downloadButton("report", "Download report")),
 
                     column(2, selectInput("exportFormat", label = "Export format",
-                                          choices = list( 'R' = "r_file",
-                                                          'json' = "json_file",
-                                                          'csv' = "csv_file")),
+                                          choices = list( 'json' = "json_file",
+                                                          'csv' = "csv_file",
+                                                          'R' = "r_file")),
                               downloadButton("download_rds", "Export Results"))
                 ),
 

@@ -356,9 +356,6 @@ plotfit(fit, d = selected_distribution,
 
 ```{asis, echo=show_distribution}
 
-All parameter values reported to 6 significant figures. Where relevant, negative parameter values in the equations map onto the BCE/CE scale, with a negative year -x = |(-x-1)| BCE.  
-
-
 # Feedback for the fit
 ```
 
@@ -400,11 +397,11 @@ cat(user_notes)
 fbs<-generateFeedbackSummary(fit,dist=selected_distribution,fqc=fq,fpc=fp)
 
 cat("**Additional feedback for selected quantiles**\n\n")
-fbs$values[,2]<-round(fbs$values[,2],1)
+fbs$values[,2]<-sprintf("%.2f",round(fbs$values[,2],2))
 fbs$values[,1]<-to.BCECE(fbs$values[,1],toText=TRUE) 
 knitr::kable(fbs$values)
 cat("**Additional feedback for selected probabilities**\n\n")
-fbs$probs[,1]<-round(fbs$probs[,1],2)
+fbs$probs[,1]<-sprintf("%.2f",round(fbs$probs[,1],2))
 fbs$probs[,2]<-to.BCECE(fbs$probs[,2],toText=TRUE) 
 knitr::kable(fbs$probs)
 
@@ -412,7 +409,7 @@ knitr::kable(fbs$probs)
 
 ```{asis, echo=show_distribution}
 
-Probabilities given either to 2 decimal places or as percentage.  
+All parameter values reported to 6 significant figures. Where relevant, negative parameter values in the equations, e.g. $-x$, map onto the calendar scale as $x + 1$BCE. Probabilities given either to 2 decimal places or as percentage.  
 ```
 
 
