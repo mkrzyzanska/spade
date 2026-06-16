@@ -82,9 +82,29 @@ ui <- shinyUI(fluidPage(
 
                 fluidRow(
 
-                    column(2,uiOutput("start_date_container")
-                           #numericInput("startDate", label = "Earliest Date",
-                           #value = 8000,min = .Machine$double.eps),
+                    column(2,
+                           #uiOutput("start_date_container")
+                           conditionalPanel(
+                             condition = "output.no_chips == true",
+                             numericInput("startDate", label = "Earliest Date",
+                                          value = 8000,min = .Machine$double.eps)#,
+                           ),
+                           conditionalPanel(
+                             condition = "output.no_chips == false",
+
+                            # div(style = "opacity: 0.5; cursor: not-allowed;",
+                            #     numericInput("startDate_disabled", "Earliest Date", value = 8000)
+#
+#                             )
+                             tagAppendAttributes(
+                               numericInput("startDate_disabled", "Earliest Date", value = 8000),
+                               # This makes the box look faded/inactive
+                               style = "opacity: 0.5; pointer-events: none;",
+                               # This targets the internal input tag to completely block the keyboard
+                               .cssSelector = "input"
+                             )
+                           )
+
                            #checkboxInput("earlyHard", label = "hard boundary")
                     ),
 
@@ -95,9 +115,24 @@ ui <- shinyUI(fluidPage(
                     ),
 
                     column(2,
-                           uiOutput("end_date_container")
-                           #numericInput("endDate", label = "Latest Date  ",
-                           #value = 2025,min = .Machine$double.eps),
+                           #uiOutput("end_date_container")
+                           conditionalPanel(
+                             condition = "output.no_chips == true",
+                             numericInput("endDate", label = "Latest Date",
+                                          value = 2000,min = .Machine$double.eps)#,
+                           ),
+                           conditionalPanel(
+                             condition = "output.no_chips == false",
+                             tagAppendAttributes(
+                               numericInput("endDate_disabled", "Latest Date", value = 2000),
+                               # This makes the box look faded/inactive
+                               style = "opacity: 0.5; pointer-events: none;",
+                               # This targets the internal input tag to completely block the keyboard
+                               .cssSelector = "input"
+                             )
+
+                           )
+
                            #checkboxInput("earlyHard", label = "hard boundary")
                     ),
 
@@ -348,45 +383,20 @@ server <- function(input, output,session) {
       )
     })
 
-    output$start_date_container <- renderUI({
-      current_val <- if (!is.null(input$startDate)) input$startDate else 8000
-      if (sum(rl$chips) == 0) {
-        # If chips are gone, show the ACTUAL working date input
-        numericInput("startDate", "Earliest Date", value = current_val)
-      } else {
-        # If chips are present, show a "fake" version that doesn't work
-        div(
-          style = "position: relative; display: inline-block;",
-          div( style = "opacity: 0.5; cursor: not-allowed;", # Make it look grey/locked
-          numericInput("startDate_disabled", "Earliest Date", value = current_val)
-        ),
-        actionLink("date_click_trap", "",
-                    style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;")
-        )
-      }
+    output$no_chips <- reactive({
+      sum(rl$chips) == 0
+    })
+    outputOptions(output, "no_chips", suspendWhenHidden = FALSE)
+
+    # Keep the fake input synced with the real one
+    observeEvent(input$startDate, {
+      updateNumericInput(session, "startDate_disabled", value = input$startDate)
     })
 
-    output$end_date_container <- renderUI({
-
-      current_val <- if (!is.null(input$endDate)) input$endDate else 2025
-      if (sum(rl$chips) == 0) {
-        # If chips are gone, show the ACTUAL working date input
-        numericInput("endDate", "Latest Date", value = current_val)
-
-      } else {
-        # If chips are present, show a "fake" version that doesn't work
-        div(
-          style = "position: relative; display: inline-block;",
-          title = "Reset tokens to edit this field",
-          div( style = "opacity: 0.5; cursor: not-allowed;", # Make it look grey/locked
-               numericInput("endDate_disabled", "Latest Date", value = current_val)
-          ),
-          actionLink("date_click_trap", "",
-                     style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;")
-        )
-
-      }
+    observeEvent(input$endDate, {
+      updateNumericInput(session, "endDate_disabled", value = input$endDate)
     })
+
 
     output$sdate_container <- renderUI({
 
