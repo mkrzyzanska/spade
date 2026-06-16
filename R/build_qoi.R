@@ -1,3 +1,4 @@
+#' @export
 build_qoi <- function(eoi,findtype,UFI,ULI,USI) {
   eoi <- trimws(eoi %||% "")
   findtype <- trimws(findtype %||% "")
