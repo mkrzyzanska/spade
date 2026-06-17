@@ -1,3 +1,4 @@
+#' @export
 tError <-
 function(parameters, values, probabilities, weights, degreesfreedom){
 	sum(weights * (pt((values-parameters[1]) / exp(parameters[2]),

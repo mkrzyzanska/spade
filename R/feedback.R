@@ -1,3 +1,4 @@
+#' @export
 feedback <- function(fit, quantiles =  NA, values = NA, dist= "best", ex = NA, sf = 3,hdr.prob=10){
 
 

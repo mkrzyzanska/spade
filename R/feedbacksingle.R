@@ -1,3 +1,5 @@
+#' @export
+
 feedbacksingle <-
 function(fit, quantiles =  NA, values = NA, sf = 3, ex = 1,hdr.prob=90){
   credMass=hdr.prob/100

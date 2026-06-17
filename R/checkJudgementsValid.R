@@ -1,3 +1,5 @@
+#' @export
+
 checkJudgementsValid <- function(probs, vals, tdf, lower, upper, silent = TRUE,
                                  excludeExponential = FALSE){
   valid <- TRUE

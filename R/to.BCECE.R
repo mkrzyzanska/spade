@@ -1,3 +1,5 @@
+#' @export
+
 to.BCECE <- function (x, toText=FALSE,reverse=FALSE) {
 
   if(reverse==TRUE){

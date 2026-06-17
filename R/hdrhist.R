@@ -1,5 +1,6 @@
 #### Writing the hdr function
 
+#' @export
 
 hdrhist <- function(hdr, z, pz){
     # Step 1: Compute bin edges and probabilities

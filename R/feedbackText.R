@@ -1,3 +1,5 @@
+#' @export
+
 feedbackText<-function(feedback_summary){
     values <- feedback_summary$values$Values
     probs<-feedback_summary$probs$Probabilities
