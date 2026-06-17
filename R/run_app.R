@@ -1,4 +1,5 @@
 #' Run the Shiny app
+#' @import ggplot2
 #' @export
 run_spade <- function(...) {
   app_dir <- system.file("shiny", "elicitation_app", package = "spade")
