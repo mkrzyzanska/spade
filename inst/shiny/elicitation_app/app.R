@@ -330,6 +330,7 @@ server <- function(input, output,session) {
       updateNumericInput(session, "nBins", value = as.numeric(dat$nBins))
 
       # --- restore metadata inputs ---
+      updateTextInput(session, "QoI",         value = dat$QoI     %||% "")
       updateTextInput(session, "Date",        value = dat$date     %||% "")
       updateTextInput(session, "Expert",      value = dat$expert      %||% "")
       updateTextInput(session, "Facilitator", value = dat$facilitator %||% "")
@@ -1436,7 +1437,8 @@ server <- function(input, output,session) {
       if(grepl(".rds",file)==TRUE){
 
 
-      elicited_date <- list(date = input$Date,
+      elicited_date <- list(QoI = input$QoI,
+                            date = input$Date,
                             expert = input$Expert,
                             facilitator = input$Facilitator,
                             findtype= input$FindType,
@@ -1458,6 +1460,7 @@ server <- function(input, output,session) {
       }else if(grepl(".json",file)==TRUE){
         # 1. Main JSON structure
         json_data <- list(
+          QoI                   = input$QoI,
           date                  = input$Date,
           expert                = input$Expert,
           facilitator           = input$Facilitator,
@@ -1486,7 +1489,9 @@ server <- function(input, output,session) {
         jsonlite::write_json(final_json_list, file, pretty = TRUE, auto_unbox = TRUE)
 
       }else if(grepl(".csv",file)==TRUE){
-        df<-data.frame(date = input$Date,
+        df<-data.frame(
+        QoI = input$QoI,
+        date = input$Date,
         expert = input$Expert,
         facilitator = input$Facilitator,
         findtype= input$FindType,
