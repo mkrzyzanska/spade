@@ -330,6 +330,7 @@ server <- function(input, output,session) {
       updateNumericInput(session, "nBins", value = as.numeric(dat$nBins))
 
       # --- restore metadata inputs ---
+      updateTextInput(session, "Date",        value = dat$date     %||% "")
       updateTextInput(session, "Expert",      value = dat$expert      %||% "")
       updateTextInput(session, "Facilitator", value = dat$facilitator %||% "")
       updateTextInput(session, "FindType",    value = dat$findtype    %||% "")
@@ -1455,25 +1456,34 @@ server <- function(input, output,session) {
       elicited_date<-c(elicited_date,dist_params)
       saveRDS(elicited_date, file)
       }else if(grepl(".json",file)==TRUE){
-        writeLines(paste0('{"date":"', input$Date,
-                          '",\n"expert":"', input$Expert,
-                          '",\n"facilitator":"', input$Facilitator,
-                          '",\n"findtype":"', input$FindType,
-                          '",\n"EoI":"', input$EoI,
-                          '",\n"UFI":"', input$UFI,
-                          '",\n"ULI":"', input$ULI,
-                          '",\n"USI":"', input$USI,
-                          '",\n"PoE":"', input$PoE,
-                          '",\n"startDate":', startDate(),
-                          ',\n"endDate":', endDate(),
-                          ',\n"nBins":', ifelse(input$customiseGraph && !is.null(input$nBins),input$nBins,nBins()),
-                          ',\n"chips":[', paste(rl$chips,collapse=","),
-                          '],\n"selected_distribution":"', distr,
-                          '",\n"notes":"', input$user_notes,
-                          '",\n',param_string,
-                          '}'
-                          )
-          ,file)
+        # 1. Main JSON structure
+        json_data <- list(
+          date                  = input$Date,
+          expert                = input$Expert,
+          facilitator           = input$Facilitator,
+          findtype              = input$FindType,
+          EoI                   = input$EoI,
+          UFI                   = input$UFI,
+          ULI                   = input$ULI,
+          USI                   = input$USI,
+          PoE                   = input$PoE,
+          startDate             = startDate(),
+          endDate               = endDate(),
+          nBins                 = ifelse(input$customiseGraph && !is.null(input$nBins), input$nBins, nBins()),
+          chips                 = rl$chips,
+          selected_distribution = distr,
+          notes                 = input$user_notes
+        )
+
+        # 2. Turn your dist_params dataframe/matrix row into a named list
+        # (e.g., list(shape = "4.89", rate = "0.09"))
+        params_list <- as.list(dist_params[1, , drop = FALSE])
+
+        # 3. Merge the two lists together flawlessly
+        final_json_list <- c(json_data, params_list)
+
+        # 4. Save to file safely (auto_unbox ensures single values don't turn into arrays)
+        jsonlite::write_json(final_json_list, file, pretty = TRUE, auto_unbox = TRUE)
 
       }else if(grepl(".csv",file)==TRUE){
         df<-data.frame(date = input$Date,
