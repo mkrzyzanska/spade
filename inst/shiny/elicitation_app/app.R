@@ -1084,7 +1084,7 @@ server <- function(input, output,session) {
 
         #if(length(rl$chip)==nBins()){
           for(i in 1:nBins()){
-            if(rl$chips[i]>0){
+            if(!is.na(rl$chips[i])&rl$chips[i]>0){
               rect(rep(bin.left()[i],rl$chips[i]),c(0:(rl$chips[i]-1)),
                  rep(bin.right()[i],rl$chips[i]),c(1:rl$chips[i]),col=input$colour)
             }
