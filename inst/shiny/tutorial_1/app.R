@@ -10,32 +10,7 @@ startDate<-1800
 endDate<-1950
 negatives=FALSE
 
-#source("extra_functions/checkJudgementsValid.r")
-#source("extra_functions/feedback.r")
-#source("extra_functions/feedbacksingle.r")
-#source("extra_functions/qhist.r")
-#source("extra_functions/phist.r")
-#source("extra_functions/fitdist2.r")
-#source("extra_functions/normal.error.r")
-#source("extra_functions/logt.error.r")
-#source("extra_functions/gamma.error.r")
-#source("extra_functions/tError.R")
-#source("extra_functions/exponential.error.R")
-#source("extra_functions/lognormal.error.R")
-#source("extra_functions/plotfit.R")
-#source("extra_functions/makeSingleExpertPlot.R")
-#source("extra_functions/dhist.R")
-#source("extra_functions/fitBspline.r")
-#source("extra_functions/makeCDFPlot.R")
-#source("extra_functions/cdfHelperfunctions.R")
 source("app_texts.r")
-
-
-
-
-#source("extra_functions/beta.error.R")
-
-
 
  ui <- shinyUI(fluidPage(
 
