@@ -771,7 +771,7 @@ server <- function(input, output,session) {
     # When checkbox is checked, use input$nBins
     observeEvent(input$customiseGraph, {
       if (input$customiseGraph==TRUE) {
-        if(is.null(input$nBins)|is.na(input$nBins)){
+        if(is.null(input$nBins)||is.na(input$nBins)){
           updateNumericInput(session, "nBins", value = nBins())
         }
         if(pause()!=TRUE){
