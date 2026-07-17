@@ -1,4 +1,15 @@
+#' Title
+#'
+#' @param eoi
+#' @param findtype
+#' @param UFI
+#' @param ULI
+#' @param USI
+#'
+#' @returns
 #' @export
+#'
+#' @examples
 build_qoi <- function(eoi,findtype,UFI,ULI,USI) {
   eoi <- trimws(eoi %||% "")
   findtype <- trimws(findtype %||% "")
