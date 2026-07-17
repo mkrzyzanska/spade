@@ -6,10 +6,13 @@
 <url><loc>/articles/using-the-app.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
+<url><loc>/reference/CalDatesTransform.html</loc></url>
+<url><loc>/reference/build_qoi.html</loc></url>
 <url><loc>/reference/fitdist.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
 <url><loc>/reference/makeCDFPlot.html</loc></url>
 <url><loc>/reference/plotfit.html</loc></url>
+<url><loc>/reference/process_date.html</loc></url>
 <url><loc>/reference/run_spade.html</loc></url>
 </urlset>
 
