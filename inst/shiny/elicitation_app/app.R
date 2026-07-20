@@ -1,3 +1,4 @@
+library(spade)
 # UI ----
 ui <- shinyUI(fluidPage(
 

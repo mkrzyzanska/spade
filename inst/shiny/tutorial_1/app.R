@@ -1,6 +1,7 @@
 library("SHELF")
 library("ggplot2")
 library("shinyjs")
+library("spade")
 limits<-"0, 100"
 startingMethod<-"roulette"
 nbins=20
