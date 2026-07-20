@@ -12,3 +12,4 @@
   or more experts
 - [`process_date()`](process_date.md) : Title
 - [`run_spade()`](run_spade.md) : Run the Shiny app
+- [`run_tutorial_1()`](run_tutorial_1.md) : Title
