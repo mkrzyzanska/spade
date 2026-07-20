@@ -51,28 +51,94 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="spade">SPADE<a class="anchor" aria-label="anchor" href="#spade"></a>
+<div class="page-header"><h1 id="spade-sheffield-probabilistic-artefact-date-elicitation">SPADE (Sheffield Probabilistic Artefact Date Elicitation)<a class="anchor" aria-label="anchor" href="#spade-sheffield-probabilistic-artefact-date-elicitation"></a>
 </h1></div>
 <!-- badges: start -->
 <!-- badges: end -->
-<p>The <strong>Sheffield Probabilistic Artefact Date Elicitation (SPADE)</strong> package contains a shiny app that can be used to elicit probabilistic date estimates for artefacts, based on expert knowledge. It has been developed as part of the <strong>Quantifying Uncertainty in Expert Archaeological Evidence (QUEADE)</strong> project funded by Leverhulme Trust and accompanies the publication:</p>
-<p>Krzyzanska, M., May, K., Oakley, J. E., Wigg-Wolf, D., Buck, C. E., Quantifying uncertainty in Expert Archaeological Dating Evidence: a formal knowledge elicitation approach. Submitted to the <em>Journal of Archaeological Science</em>.</p>
+<p><img src="logo/SPADElogo.png"></p>
+<p>The <strong>Sheffield Probabilistic Artefact Date Elicitation (SPADE)</strong> package contains a Shiny app that can be used to elicit probabilistic date estimates for artefacts based on expert knowledge.<br>
+It has been developed as part of the <strong>Quantifying Uncertainty in Expert Archaeological Evidence (QUEADE)</strong> project funded by the Leverhulme Trust and accompanies the publication:</p>
+<blockquote>
+<p>Krzyzanska, M., May, K., Mees, A. W., Oakley, J. E., Wigg-Wolf, D., &amp; Buck, C. E. Quantifying uncertainty in Expert Archaeological Dating Evidence: a formal knowledge elicitation approach. <em>Submitted to the Journal of Archaeological Science</em>.</p>
+</blockquote>
 <div class="section level2">
-<h2 id="installation-and-running-the-app">Installation and running the app:<a class="anchor" aria-label="anchor" href="#installation-and-running-the-app"></a>
+<h2 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
 </h2>
-<p>Install the devtools package if you do not already have it:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span></code></pre></div>
-<p>Install the latest version of spade directly from GitHub:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"mkrzyzanska/spade"</span><span class="op">)</span></span></code></pre></div>
-<p>Launch the application:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">spade</span><span class="fu">::</span><span class="fu"><a href="reference/run_spade.html">run_spade</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>The app included in this repository allows users to elicit probability distributions for artefact dates using the histogram (also known as a roulette or a chip-and-bin) method. It requires users to input the earliest and latest plausible dates for the event of interest (e.g. deposition) in the life cycle of an archaeological artefact and place tokens representing probability on a timeline divided into equal intervals.</p>
+<p>It then automatically fits a range of probability distributions to the cumulative probabilities implied by the token allocation and provides users with feedback on the fit. It also allows users to input relevant metadata about the dates and automatically generates the documentation and outputs required to reproduce the distribution fitting process.</p>
+<p>The repository also contains a tutorial introducing the methodology in the context of uncertainty about dates. It is strongly recommended that new users go through it before running the app.</p>
+<p>The elicitation methodology used in the software was originally implemented in the general-purpose <a href="https://github.com/OakleyJ/SHELF" class="external-link">SHELF</a> package (recommended for applications that do not involve artefact dates). <a href="https://github.com/OakleyJ/SHELF" class="external-link">SHELF</a> is accompanied by a range of general-purpose elicitation tutorials that provide a useful introduction to elicitation, which can be found <a href="https://shelf.sites.sheffield.ac.uk/" class="external-link">here</a>.</p>
+<p>Beyond the app, SPADE provides a suite of functions that can be used to load elicited dates saved from the app into an R session and process them to reproduce plots generated by the app or perform further analysis. An example workflow can be found <a href="https://github.com/mkrzyzanska/QUEADE/blob/main/queade.R" class="external-link">‘here’</a> file.</p>
 </div>
 <div class="section level2">
-<h2 id="how-to-cite">How to cite<a class="anchor" aria-label="anchor" href="#how-to-cite"></a>
+<h2 id="running-the-app-online">Running the App Online<a class="anchor" aria-label="anchor" href="#running-the-app-online"></a>
 </h2>
+<p>The elicitation app and tutorial available in this package are hosted on <a href="https://www.shinyapps.io/" class="external-link">shinyapps.io</a> and can be accessed with the following links:</p>
+<ul>
+<li>
+<strong>Main App:</strong> <a href="https://queade.shinyapps.io/spade/" class="external-link">https://queade.shinyapps.io/spade/</a>
+</li>
+<li>
+<strong>Tutorial:</strong> <a href="https://queade.shinyapps.io/spade-tutorial-1/" class="external-link">https://queade.shinyapps.io/spade-tutorial-1/</a>
+</li>
+</ul>
+<p><em>Note: Hosting is currently limited by a free tier allowance, so the apps may temporarily be down if rate limits are exceeded. It is recommended to install and run the app locally using the instructions below.</em></p>
+</div>
+<div class="section level2">
+<h2 id="local-installation">Local Installation<a class="anchor" aria-label="anchor" href="#local-installation"></a>
+</h2>
+<p>Running SPADE locally requires an R installation (<a href="https://www.r-project.org/" class="external-link">instructions here</a>).</p>
+<ol style="list-style-type: decimal">
+<li>
+<p>Install <code>devtools</code> if you do not already have it:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span></code></pre></div>
+</li>
+<li>
+<p>Install the latest version of <code>spade</code> directly from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"mkrzyzanska/spade"</span><span class="op">)</span></span></code></pre></div>
+</li>
+</ol>
+</div>
+<div class="section level2">
+<h2 id="running-the-app-locally">Running the App Locally<a class="anchor" aria-label="anchor" href="#running-the-app-locally"></a>
+</h2>
+<p>To launch the main application:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">spade</span><span class="fu">::</span><span class="fu"><a href="reference/run_spade.html">run_spade</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>To launch the tutorial:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">spade</span><span class="fu">::</span><span class="fu">run_tutorial1</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
+</h2>
+<p>This repository contains modified code from the <strong>SHELF</strong> package <a href="https://doi.org/10.32614/CRAN.package.SHELF" class="external-link">(Oakley, 2015)</a> under the GNU General Public License. It also repurposes a data class from the <strong>rcarbon</strong> package <a href="https://doi.org/10.32614/CRAN.package.rcarbon" class="external-link">(Bevan and Crema, 2017)</a> with a view to developing interoperability between the two packages in the future.</p>
+</div>
+<div class="section level2">
+<h2 id="how-to-cite">How to Cite<a class="anchor" aria-label="anchor" href="#how-to-cite"></a>
+</h2>
+<p>If you use this software, please cite it as follows:</p>
+<div class="section level3">
+<h3 id="bibtex">BibTeX<a class="anchor" aria-label="anchor" href="#bibtex"></a>
+</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">@software{krzyzanska_spade_2026,</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">  author       = {Krzyzanska, Marta},</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">  title        = {{SPADE}: Sheffield Probabilistic Artefact Date Elicitation},</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">  year         = {2026},</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">  publisher    = {GitHub},</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">  journal      = {GitHub repository},</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">  howpublished = {\url{[https://github.com/mkrzyzanska/spade](https://github.com/mkrzyzanska/spade)}}</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="text-citation">Text Citation<a class="anchor" aria-label="anchor" href="#text-citation"></a>
+</h3>
+<blockquote>
+<p>Krzyzanska, M. (2026). <em>SPADE: Sheffield Probabilistic Artefact Date Elicitation</em> [Computer software]. GitHub. <a href="https://github.com/mkrzyzanska/spade" class="external-link uri">https://github.com/mkrzyzanska/spade</a></p>
+</blockquote>
+</div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">
