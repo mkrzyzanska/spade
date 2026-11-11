@@ -4,6 +4,24 @@ ui <- shinyUI(fluidPage(
 
     # Application title
     titlePanel("SPADE: Sheffield Probabilistic Artefact Dates Elicitation Software"),
+    
+    #tutorial link
+    tags$details(
+      open = TRUE,  # <-- Keeps the dropdown section expanded by default
+      tags$summary(
+        style = "font-size: 1.1em; cursor: pointer; margin-bottom: 10px; font-weight: bold;",
+        "⚠️ First time user? Please click the tutorial below before using the application. (click to collapse)"
+      ),
+      div(
+        style = "background-color: #fff3cd; color: #856404; padding: 12px; border-radius: 4px; margin-top: 5px;",
+        tags$a(
+          href = "https://queade.shinyapps.io/spade-tutorial-1/", 
+          target = "_blank", 
+          style = "color: #533f03; text-decoration: underline;",
+          "Click here to go to the SPADE tutorial"
+        ),
+      )
+    )
 
     sidebarLayout(
       sidebarPanel(
