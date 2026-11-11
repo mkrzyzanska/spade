@@ -3,7 +3,7 @@ library(spade)
 ui <- shinyUI(fluidPage(
 
     # Application title
-    titlePanel("SPADE: Sheffield Probabilistic Artefact Dates Elicitation Software"),
+    titlePanel("SPADE: Sheffield Probabilistic Artefact Dates Elicitation Software test"),
     
     #tutorial link
     tags$details(
